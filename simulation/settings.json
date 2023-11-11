@@ -35,5 +35,23 @@
         "C2": 16,
         "C3": 20,
         "C4": 21
+    },
+
+    "DPIR1": {
+        "simulated": true,
+        "pin": 4,
+        "code": "DPIR1"
+    },
+
+    "RPIR1": {
+        "simulated": true,
+        "pin": 4,
+        "code": "RPIR1"
+    },
+
+    "RPIR2": {
+        "simulated": true,
+        "pin": 4,
+        "code": "RPIR2"
     }
 }

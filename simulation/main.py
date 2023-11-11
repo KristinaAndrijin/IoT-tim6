@@ -4,6 +4,7 @@ from components.dht import run_dht
 from components.ds import run_ds
 from components.dus import run_dus
 from components.dms import run_dms
+from components.pir import run_pir
 import time
 
 try:
@@ -32,6 +33,16 @@ def run_sensors(settings, threads, stop_event):
     # DMS
     dms_settings = settings['DMS']
     run_dms(dms_settings, threads, stop_event)
+
+    # DPIR
+    dpir_settings = settings['DPIR1']
+    run_pir(dpir_settings, threads, stop_event)
+
+    # RPIR
+    rpir_settings = settings['RPIR1']
+    run_pir(rpir_settings, threads, stop_event)
+    rpir_settings = settings['RPIR2']
+    run_pir(rpir_settings, threads, stop_event)
 
 
 if __name__ == "__main__":
