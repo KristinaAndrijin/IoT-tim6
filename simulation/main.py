@@ -2,6 +2,7 @@ import threading
 from settings import load_settings
 from components.dht import run_dht
 from components.ds import run_ds
+from components.dus import run_dus
 import time
 
 try:
@@ -22,6 +23,10 @@ def run_sensors(settings, threads, stop_event):
     #DS
     ds1_settings = settings['DS1']
     run_ds(ds1_settings,threads,stop_event)
+
+    #DUS
+    dus1_settings = settings['DUS1']
+    run_dus(dus1_settings, threads, stop_event)
 
 
 if __name__ == "__main__":

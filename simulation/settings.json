@@ -15,5 +15,12 @@
         "simulated": true,
         "pin": 17,
         "code": "DS1"
+    },
+
+     "DUS1": {
+        "simulated": true,
+        "trig_pin": 23,
+        "echo_pin": 24,
+        "code": "DUS1"
     }
 }
