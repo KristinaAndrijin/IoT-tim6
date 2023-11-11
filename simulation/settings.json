@@ -9,5 +9,11 @@
         "simulated": true,
         "pin": 17,
         "code": "RDHT2"
+    },
+
+    "DS1": {
+        "simulated": true,
+        "pin": 17,
+        "code": "DS1"
     }
 }
