@@ -64,6 +64,6 @@
     "DL": {
         "simulated": true,
         "pin": 17,
-        "code": "DB"
+        "code": "DL"
     }
 }

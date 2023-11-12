@@ -17,7 +17,8 @@ def dl_callback(code=""):
             print("LED turned ON")
             set_led_state(True)
         print("=" * 20)
-        time.sleep(1)
+        # time.sleep(1)
+        set_threads_done()
 
 
 def run_dl(settings, threads, stop_event):

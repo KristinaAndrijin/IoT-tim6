@@ -11,7 +11,8 @@ def db_callback(code=""):
         print(f"Code: {code}")
         print("Buzz")
         print("=" * 20)
-        time.sleep(1)
+        # time.sleep(1)
+        set_threads_done()
 
 
 def run_db(settings, threads, stop_event):

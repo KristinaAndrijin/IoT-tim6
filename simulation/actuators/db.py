@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+from globals import *
 
 
 class DoorBuzzer:
@@ -23,4 +24,5 @@ def run(db):
     pitch = 440
     duration = 0.1
     db.buzz(pitch, duration)
-    time.sleep(1)
+    # time.sleep(1)
+    set_threads_done()

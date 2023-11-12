@@ -55,7 +55,7 @@ def open_menu():
         print("Menu contents:")
         print("1. Start buzzing")
         print("2. Switch led state")
-        print("3. Option 3")
+        # print("3. Option 3")
         print("Enter 'x' to close the menu.")
 
         user_input = input(" >> ").lower()
@@ -65,9 +65,11 @@ def open_menu():
         elif user_input == '1':
             db_settings = settings['DB']
             run_db(db_settings, threads, stop_event)
+            wait_for_threads()
         elif user_input == '2':
             dl_settings = settings['DL']
             run_dl(dl_settings, threads, stop_event)
+            wait_for_threads()
         else:
             print("Invalid input. Try again.")
 

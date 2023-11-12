@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+from globals import *
 
 
 class DoorLight:
@@ -18,4 +19,5 @@ class DoorLight:
 
 def run(dl):
     dl.switch()
-    time.sleep(1)
+    # time.sleep(1)
+    set_threads_done()
