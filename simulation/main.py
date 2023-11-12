@@ -5,6 +5,9 @@ from components.ds import run_ds
 from components.dus import run_dus
 from components.dms import run_dms
 from components.pir import run_pir
+from components.db import run_db
+from components.dl import run_dl
+from components.lock import actuator_lock
 from globals import *
 import time
 
@@ -24,11 +27,11 @@ def run_sensors(settings, threads, stop_event):
     dht2_settings = settings['RDHT2']
     run_dht(dht2_settings, threads, stop_event)
 
-    #DS
+    # DS
     ds1_settings = settings['DS1']
     run_ds(ds1_settings,threads,stop_event)
 
-    #DUS
+    # DUS
     dus1_settings = settings['DUS1']
     run_dus(dus1_settings, threads, stop_event)
 
@@ -48,18 +51,25 @@ def run_sensors(settings, threads, stop_event):
 
 def open_menu():
     global is_menu_opened
-    print("Menu contents:")
-    print("1. Option 1")
-    print("2. Option 2")
-    print("3. Option 3")
-    print("Enter 'x' to close the menu.")
+    with actuator_lock:
+        print("Menu contents:")
+        print("1. Start buzzing")
+        print("2. Switch led state")
+        print("3. Option 3")
+        print("Enter 'x' to close the menu.")
 
-    user_input = input().lower()
+        user_input = input(" >> ").lower()
 
-    if user_input == 'x':
-        set_is_menu_opened(False)
-    else:
-        print("Invalid input. Try again.")
+        if user_input == 'x':
+            set_is_menu_opened(False)
+        elif user_input == '1':
+            db_settings = settings['DB']
+            run_db(db_settings, threads, stop_event)
+        elif user_input == '2':
+            dl_settings = settings['DL']
+            run_dl(dl_settings, threads, stop_event)
+        else:
+            print("Invalid input. Try again.")
 
 
 if __name__ == "__main__":

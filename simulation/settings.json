@@ -53,5 +53,17 @@
         "simulated": true,
         "pin": 4,
         "code": "RPIR2"
+    },
+
+    "DB": {
+        "simulated": true,
+        "pin": 17,
+        "code": "DB"
+    },
+
+    "DL": {
+        "simulated": true,
+        "pin": 17,
+        "code": "DB"
     }
 }
