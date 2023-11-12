@@ -5,6 +5,7 @@ from components.ds import run_ds
 from components.dus import run_dus
 from components.dms import run_dms
 from components.pir import run_pir
+from globals import *
 import time
 
 try:
@@ -14,6 +15,7 @@ try:
 except:
     pass
 
+is_menu_opened = False
 
 def run_sensors(settings, threads, stop_event):
     # DHT
@@ -44,16 +46,40 @@ def run_sensors(settings, threads, stop_event):
     rpir_settings = settings['RPIR2']
     run_pir(rpir_settings, threads, stop_event)
 
+def open_menu():
+    global is_menu_opened
+    print("Menu contents:")
+    print("1. Option 1")
+    print("2. Option 2")
+    print("3. Option 3")
+    print("Enter 'x' to close the menu.")
+
+    user_input = input().lower()
+
+    if user_input == 'x':
+        set_is_menu_opened(False)
+    else:
+        print("Invalid input. Try again.")
+
 
 if __name__ == "__main__":
     print('Starting app')
     settings = load_settings()
     threads = []
     stop_event = threading.Event()
+
     try:
         run_sensors(settings, threads, stop_event)
         while True:
-            time.sleep(1)
+            if not get_is_menu_opened():
+                user_input = input("Enter 'm' to open the menu: ").lower()
+
+                if user_input == 'm':
+                    set_is_menu_opened(True)
+                else:
+                    time.sleep(2)
+            else:
+                open_menu()
 
     except KeyboardInterrupt:
         print("=" * 20)
@@ -66,4 +92,3 @@ if __name__ == "__main__":
 
         print("=" * 20)
         print("App successfully stopped")
-        #when all threads are done print "finished"

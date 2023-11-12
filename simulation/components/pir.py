@@ -2,17 +2,18 @@ from simulators.pir import run_pir_simulator
 import threading
 import time
 from components.lock import lock
-
+from globals import *
 def pir_callback(motion, code=""):
     with lock:
-        t = time.localtime()
-        print("=" * 20)
-        print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-        print(f"Code: {code}")
-        if motion:
-            print("You moved")
-        else:
-            print("You stopped moving")
+        if not get_is_menu_opened():
+            t = time.localtime()
+            print("=" * 20)
+            print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+            print(f"Code: {code}")
+            if motion:
+                print("You moved")
+            else:
+                print("You stopped moving")
 
 
 def run_pir(settings, threads, stop_event):

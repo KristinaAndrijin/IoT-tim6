@@ -2,17 +2,19 @@ from simulators.ds import run_ds_simulator
 import threading
 import time
 from components.lock import lock
+from globals import *
 
 def ds_callback(opened, code=""):
     with lock:
-        t = time.localtime()
-        print("=" * 20)
-        print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-        print(f"Code: {code}")
-        if opened:
-            print("Door is opened")
-        else:
-            print("Door is closed")
+        if not get_is_menu_opened():
+            t = time.localtime()
+            print("=" * 20)
+            print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+            print(f"Code: {code}")
+            if opened:
+                print("Door is opened")
+            else:
+                print("Door is closed")
 
 
 def run_ds(settings, threads, stop_event):

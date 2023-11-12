@@ -2,14 +2,15 @@ from simulators.dms import run_dms_simulator
 import threading
 import time
 from components.lock import lock
-
+from globals import *
 def dms_callback(character, code=""):
     with lock:
-        t = time.localtime()
-        print("=" * 20)
-        print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-        print(f"Code: {code}")
-        print(f"Character: " + str(character))
+        if not get_is_menu_opened():
+            t = time.localtime()
+            print("=" * 20)
+            print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+            print(f"Code: {code}")
+            print(f"Character: " + str(character))
 
 
 def run_dms(settings, threads, stop_event):

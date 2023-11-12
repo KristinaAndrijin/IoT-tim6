@@ -2,16 +2,17 @@ from simulators.dht import run_dht_simulator
 import threading
 import time
 from components.lock import lock
-
+from globals import *
 
 def dht_callback(humidity, temperature, code=""):
     with lock:
-        t = time.localtime()
-        print("=" * 20)
-        print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-        print(f"Code: {code}")
-        print(f"Humidity: {humidity}%")
-        print(f"Temperature: {temperature}°C")
+        if not get_is_menu_opened():
+            t = time.localtime()
+            print("=" * 20)
+            print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+            print(f"Code: {code}")
+            print(f"Humidity: {humidity}%")
+            print(f"Temperature: {temperature}°C")
 
 
 def run_dht(settings, threads, stop_event):
