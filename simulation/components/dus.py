@@ -3,7 +3,7 @@ import threading
 import time
 from components.lock import lock
 from globals import *
-def dus_callback(distance, code=""):
+def dus_callback(distance, code="Sensor is on"):
     with lock:
         if not get_is_menu_opened():
             t = time.localtime()

@@ -4,7 +4,7 @@ import time
 from components.lock import lock
 from globals import *
 
-def ds_callback(opened, code=""):
+def ds_callback(opened, code="Sensor is on"):
     with lock:
         if not get_is_menu_opened():
             t = time.localtime()
