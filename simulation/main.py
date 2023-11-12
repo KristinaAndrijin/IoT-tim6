@@ -56,6 +56,14 @@ if __name__ == "__main__":
             time.sleep(1)
 
     except KeyboardInterrupt:
+        print("=" * 20)
         print('Stopping app')
         for t in threads:
             stop_event.set()
+
+        for t in threads:
+            t.join()
+
+        print("=" * 20)
+        print("App successfully stopped")
+        #when all threads are done print "finished"
