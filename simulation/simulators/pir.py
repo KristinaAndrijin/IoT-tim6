@@ -7,9 +7,9 @@ def generate_values():
         yield True if random.randint(0, 10) < 5 else False
 
 
-def run_pir_simulator(delay, callback, stop_event, code):
+def run_pir_simulator(delay, callback, stop_event, settings):
     for motion in generate_values():
         time.sleep(delay)
-        callback(motion, code)
+        callback(motion, settings)
         if stop_event.is_set():
             break

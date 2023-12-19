@@ -9,10 +9,10 @@ class DoorSensor:
     def read_door_state(self):
         return GPIO.input(self.pin)
 
-    def run(self, delay, callback, stop_event):
+    def run(self, delay, callback, stop_event,settings):
         while True:
             state = self.read_door_state()
-            callback(state)
+            callback(state,settings)
             if stop_event.is_set():
                 break
             time.sleep(delay)

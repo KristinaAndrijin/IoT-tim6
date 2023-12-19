@@ -11,10 +11,10 @@ def generate_values(initial_opened = False):
 
       
 
-def run_ds_simulator(delay, callback, stop_event,code):
+def run_ds_simulator(delay, callback, stop_event,settings):
         for value in generate_values():
             time.sleep(delay)
-            callback(value,code)
+            callback(value,settings)
             if stop_event.is_set():
                   break
               

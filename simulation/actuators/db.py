@@ -20,9 +20,10 @@ class DoorBuzzer:
             time.sleep(delay)
 
 
-def run(db):
+def run(db,callback,settings):
     pitch = 440
     duration = 0.1
     db.buzz(pitch, duration)
     # time.sleep(1)
+    callback(settings)
     set_threads_done()
