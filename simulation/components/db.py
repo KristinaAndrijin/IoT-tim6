@@ -9,7 +9,7 @@ import paho.mqtt.publish as publish
 
 batch = []
 publish_data_counter = 0
-publish_data_limit = 5
+publish_data_limit = 1
 
 #TODO: NIKO NE ŠALJE AKTUATORE KAO BATCH OD 1
 def publisher_task(event, batch):
@@ -21,7 +21,7 @@ def publisher_task(event, batch):
             publish_data_counter = 0
             batch.clear()
         publish.multiple(local_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} db values')
+        #print(f'published {publish_data_limit} db values')
         event.clear()
 
 
@@ -36,7 +36,7 @@ def db_callback(db_settings):
     code = db_settings["code"]
 
     payload = {
-        "measurement": "Distance",
+        "measurement": "Door Buzzer",
         "simulated": db_settings['simulated'],
         "runs_on": db_settings["runs_on"],
         "code": db_settings["code"],

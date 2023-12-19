@@ -21,7 +21,8 @@ def publisher_task(event, batch):
             publish_data_counter = 0
             batch.clear()
         publish.multiple(local_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} ds values')
+        if not get_is_menu_opened():
+            print(f'published {publish_data_limit} ds values')
         event.clear()
 
 
@@ -52,11 +53,11 @@ def dus_callback(distance, dus_settings):
             print(f"Distance: " + str(distance) + " cm")
             print(f"Runs on: {dus_settings['runs_on']}")
 
-            batch.append(('Distance', json.dumps(payload), 0, True))
-            publish_data_counter += 1
+        batch.append(('Distance', json.dumps(payload), 0, True))
+        publish_data_counter += 1
 
-        if publish_data_counter >= publish_data_limit:
-            publish_event.set()
+    if publish_data_counter >= publish_data_limit:
+        publish_event.set()
 
 
 def run_dus(settings, threads, stop_event):

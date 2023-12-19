@@ -21,7 +21,8 @@ def publisher_task(event, dms_batch):
             publish_data_counter = 0
             dms_batch.clear()
         publish.multiple(local_dms_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} dms values')
+        if not get_is_menu_opened():
+            print(f'published {publish_data_limit} dms values')
         event.clear()
 
 
@@ -49,11 +50,11 @@ def dms_callback(character, dms_settings):
             print(f"Character: " + str(character))
             print(f"Runs on: {dms_settings['runs_on']}")
 
-            dms_batch.append(('Character', json.dumps(character_payload), 0, True))
-            publish_data_counter += 1
+        dms_batch.append(('Character', json.dumps(character_payload), 0, True))
+        publish_data_counter += 1
 
-        if publish_data_counter >= publish_data_limit:
-            publish_event.set()
+    if publish_data_counter >= publish_data_limit:
+        publish_event.set()
 
 
 def run_dms(settings, threads, stop_event):

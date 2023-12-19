@@ -21,7 +21,8 @@ def publisher_task(event, pir_batch):
             publish_data_counter = 0
             pir_batch.clear()
         publish.multiple(local_pir_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} pir values')
+        if not get_is_menu_opened():
+            print(f'published {publish_data_limit} pir values')
         event.clear()
 
 
@@ -53,11 +54,11 @@ def pir_callback(motion, dms_settings):
                 print("You stopped moving")
             print(f"Runs on: {dms_settings['runs_on']}")
 
-            pir_batch.append(('Motion', json.dumps(character_payload), 0, True))
-            publish_data_counter += 1
+        pir_batch.append(('Motion', json.dumps(character_payload), 0, True))
+        publish_data_counter += 1
 
-        if publish_data_counter >= publish_data_limit:
-            publish_event.set()
+    if publish_data_counter >= publish_data_limit:
+        publish_event.set()
 
 
 def run_pir(settings, threads, stop_event):

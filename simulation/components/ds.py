@@ -21,7 +21,8 @@ def publisher_task(event, batch):
             publish_data_counter = 0
             batch.clear()
         publish.multiple(local_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} ds values')
+        if not get_is_menu_opened():
+            print(f'published {publish_data_limit} ds values')
         event.clear()
 
 
@@ -54,11 +55,11 @@ def ds_callback(opened,ds_settings):
             else:
                 print("Door is closed")
 
-            batch.append(('Door opened', json.dumps(payload), 0, True))
-            publish_data_counter += 1
+        batch.append(('Door opened', json.dumps(payload), 0, True))
+        publish_data_counter += 1
 
-        if publish_data_counter >= publish_data_limit:
-            publish_event.set()
+    if publish_data_counter >= publish_data_limit:
+        publish_event.set()
 
 
 

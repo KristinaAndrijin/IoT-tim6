@@ -22,7 +22,8 @@ def publisher_task(event, dht_batch):
             publish_data_counter = 0
             dht_batch.clear()
         publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} dht values')
+        if not get_is_menu_opened():
+            print(f'published {publish_data_limit} dht values')
         event.clear()
 
 
