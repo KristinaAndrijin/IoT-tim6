@@ -10,14 +10,18 @@ class DoorLight:
         GPIO.setup(self.led_pin, GPIO.OUT)
 
     def switch(self):
-        print("LED on")
-        GPIO.output(self.led_pin, GPIO.HIGH)
-        time.sleep(1)
-        print("LED off")
-        GPIO.output(self.led_pin, GPIO.LOW)
+        if led_is_on():
+            print("LED on")
+            GPIO.output(self.led_pin, GPIO.HIGH)
+            set_led_state(True)
+        else:
+            print("LED off")
+            GPIO.output(self.led_pin, GPIO.LOW)
+            set_led_state(False)
 
 
-def run(dl):
+def run(dl, callback, settings):
     dl.switch()
     # time.sleep(1)
+    callback(settings)
     set_threads_done()
