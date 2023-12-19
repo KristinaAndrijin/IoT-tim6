@@ -25,6 +25,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Humidity")
     client.subscribe("Door opened")
     client.subscribe("Character")
+    client.subscribe("Motion")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
