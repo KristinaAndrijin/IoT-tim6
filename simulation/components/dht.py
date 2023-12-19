@@ -2,10 +2,11 @@ from simulators.dht import run_dht_simulator
 import threading
 import time
 from components.lock import lock
-import paho.mqtt.publish as publish
 from globals import *
+
 from broker_settings import HOSTNAME, PORT
 import json
+import paho.mqtt.publish as publish
 
 dht_batch = []
 publish_data_counter = 0
@@ -30,8 +31,11 @@ publisher_thread = threading.Thread(target=publisher_task, args=(publish_event, 
 publisher_thread.daemon = True
 publisher_thread.start()
 
-def dht_callback(humidity, temperature, code,dht_settings):
+def dht_callback(humidity, temperature,dht_settings):
     global publish_data_counter, publish_data_limit
+
+    code = dht_settings["code"]
+
     temp_payload = {
         "measurement": "Temperature",
         "simulated": dht_settings['simulated'],
@@ -73,7 +77,7 @@ def run_dht(settings, threads, stop_event):
     code = settings['code']
     if settings['simulated']:
         print("Starting " + code + " simulator")
-        dht1_thread = threading.Thread(target=run_dht_simulator, args=(2, dht_callback, stop_event, code,settings))
+        dht1_thread = threading.Thread(target=run_dht_simulator, args=(2, dht_callback, stop_event,settings))
         dht1_thread.start()
         threads.append(dht1_thread)
         print(code + " sumilator started")
