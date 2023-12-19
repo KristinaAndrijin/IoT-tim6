@@ -34,7 +34,7 @@ def ds_callback(opened,ds_settings):
     global publish_data_counter, publish_data_limit
     code = ds_settings["code"]
 
-    temp_payload = {
+    payload = {
         "measurement": "Door opened",
         "simulated": ds_settings['simulated'],
         "runs_on": ds_settings["runs_on"],
@@ -54,7 +54,7 @@ def ds_callback(opened,ds_settings):
             else:
                 print("Door is closed")
 
-            batch.append(('Door opened', json.dumps(temp_payload), 0, True))
+            batch.append(('Door opened', json.dumps(payload), 0, True))
             publish_data_counter += 1
 
         if publish_data_counter >= publish_data_limit:

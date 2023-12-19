@@ -37,10 +37,10 @@ class DistanceSensor:
         distance = (pulse_duration * 34300) / 2
         return distance
 
-    def run(self, delay, callback, stop_event):
+    def run(self, delay, callback, stop_event,settings):
         while True:
             distance = self.get_distance()
-            callback(distance)
+            callback(distance,settings)
             if stop_event.is_set():
                 break
             time.sleep(delay)
