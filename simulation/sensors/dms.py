@@ -38,25 +38,25 @@ class DoorMembraneSwitch:
     # If it detects a change, the user pressed the button that connects the given line
     # to the detected column
 
-    def readLine(self, line, characters, callback):
+    def readLine(self, line, characters, callback,settings):
         GPIO.output(line, GPIO.HIGH)
         if (GPIO.input(self.C1) == 1):
-            callback(characters[0])
+            callback(characters[0],settings)
         if (GPIO.input(self.C2) == 1):
-            callback(characters[1])
+            callback(characters[1],settings)
         if (GPIO.input(self.C3) == 1):
-            callback(characters[2])
+            callback(characters[2],settings)
         if (GPIO.input(self.C4) == 1):
-            callback(characters[3])
+            callback(characters[3],settings)
         GPIO.output(line, GPIO.LOW)
 
-    def run(self, delay, callback, stop_event):
+    def run(self, delay, callback, stop_event, settings):
         while True:
             # call the readLine function for each row of the keypad
-            self.readLine(self.R1, ["1", "2", "3", "A"], callback)
-            self.readLine(self.R2, ["4", "5", "6", "B"], callback)
-            self.readLine(self.R3, ["7", "8", "9", "C"], callback)
-            self.readLine(self.R4, ["*", "0", "#", "D"], callback)
+            self.readLine(self.R1, ["1", "2", "3", "A"], callback,settings)
+            self.readLine(self.R2, ["4", "5", "6", "B"], callback,settings)
+            self.readLine(self.R3, ["7", "8", "9", "C"], callback,settings)
+            self.readLine(self.R4, ["*", "0", "#", "D"], callback,settings)
             if stop_event.is_set():
                 break
             time.sleep(delay)
