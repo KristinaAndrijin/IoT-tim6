@@ -25,6 +25,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Humidity")
     client.subscribe("Door opened")
     client.subscribe("Character")
+    client.subscribe("Distance")
     client.subscribe("Motion")
     client.subscribe("LightState")
 
