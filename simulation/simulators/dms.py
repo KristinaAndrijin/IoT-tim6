@@ -12,6 +12,6 @@ def generate_values():
 def run_dms_simulator(delay, callback, stop_event, settings):
     for value in generate_values():
         time.sleep(delay)
-        callback(value, settings["code"],settings)
+        callback(value,settings)
         if stop_event.is_set():
             break
