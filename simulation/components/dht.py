@@ -65,12 +65,12 @@ def dht_callback(humidity, temperature,dht_settings):
             print(f"Runs on: {dht_settings['runs_on']}")
 
 
-            dht_batch.append(('Temperature', json.dumps(temp_payload), 0, True))
-            dht_batch.append(('Humidity', json.dumps(humidity_payload), 0, True))
-            publish_data_counter += 1
+        dht_batch.append(('Temperature', json.dumps(temp_payload), 0, True))
+        dht_batch.append(('Humidity', json.dumps(humidity_payload), 0, True))
+        publish_data_counter += 1
 
-        if publish_data_counter >= publish_data_limit:
-            publish_event.set()
+    if publish_data_counter >= publish_data_limit:
+        publish_event.set()
 
 
 def run_dht(settings, threads, stop_event):
