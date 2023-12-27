@@ -17,6 +17,6 @@ class PassiveInfraRed:
 
     def run(self, delay):
         GPIO.add_event_detect(self.pir_pin, GPIO.RISING, callback=self.motion_detected)
-        GPIO.add_event_detect(self.pir_pin, GPIO.FALLING, callback=self.no_motion)
+        # GPIO.add_event_detect(self.pir_pin, GPIO.FALLING, callback=self.no_motion)
         # input("Press any key to exit...")
         time.sleep(delay)
