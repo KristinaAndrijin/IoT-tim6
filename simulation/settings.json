@@ -44,21 +44,21 @@
 
     "DPIR1": {
         "simulated": true,
-        "pin": 4,
+        "pin": 17,
         "code": "DPIR1 - Covered Porch",
         "runs_on": "PI1"
     },
 
     "RPIR1": {
         "simulated": true,
-        "pin": 4,
+        "pin": 17,
         "code": "RPIR1 - Bedroom Doors",
         "runs_on": "PI1"
     },
 
     "RPIR2": {
         "simulated": true,
-        "pin": 4,
+        "pin": 17,
         "code": "RPIR2 - Open railing",
         "runs_on": "PI1"
     },
