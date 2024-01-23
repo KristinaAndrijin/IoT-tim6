@@ -8,6 +8,7 @@ import { DevicesComponent } from './devices/devices.component';
 import { AlarmsComponent } from './alarms/alarms.component';
 import { TimersComponent } from './timers/timers.component';
 import { ManageComponent } from './manage/manage.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ManageComponent } from './manage/manage.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
