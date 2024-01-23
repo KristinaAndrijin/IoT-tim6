@@ -8,6 +8,7 @@ from components.pir import run_pir
 from components.db import run_db
 from components.dl import run_dl
 from components.lock import actuator_lock
+from components.lcd import run_lcd
 from globals import *
 import time
 
@@ -48,6 +49,10 @@ def run_sensors(settings, threads, stop_event):
     run_pir(rpir_settings, threads, stop_event)
     rpir_settings = settings['RPIR2']
     run_pir(rpir_settings, threads, stop_event)
+
+    # LCD
+    lcd_settings = settings['LCD']
+    run_lcd(lcd_settings, threads, stop_event)
 
 def open_menu():
     global is_menu_opened

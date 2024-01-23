@@ -70,6 +70,15 @@
         "runs_on": "PI1"
     },
 
+    "LCD": {
+        "simulated": true,
+        "pin_e": 2,
+        "pin_rs": 0,
+        "pins_db" : [4, 5, 6, 7],
+        "code": "GLCD - Garage LCD",
+        "runs_on": "PI1"
+    },
+
     "DL": {
         "simulated": true,
         "pin": 17,
