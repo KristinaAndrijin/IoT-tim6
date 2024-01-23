@@ -1,5 +1,6 @@
 import threading
 
+from components.ir import run_ir
 from components.rgb import run_rgb
 from components.sd import run_sd
 from settings import load_settings
@@ -60,6 +61,10 @@ def run_sensors(settings, threads, stop_event):
     # SD
     sd_settings = settings['B4SD']
     run_sd(sd_settings, threads, stop_event)
+
+    # BIR
+    bir_settings = settings['BIR']
+    run_ir(bir_settings, threads, stop_event)
 
 def open_menu():
     global is_menu_opened
