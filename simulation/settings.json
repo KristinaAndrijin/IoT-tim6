@@ -92,5 +92,13 @@
         "digits": [22, 27, 17, 24],
         "code": "B4SD - Bedroom 4 Digit 7 Segment Display",
         "runs_on": "PI1"
+    },
+    "BRGB": {
+        "simulated": true,
+        "red_pin": 12,
+        "green_pin": 13,
+        "blue_pin": 19,
+        "code": "BRGB - Bedroom RGB",
+        "runs_on": "PI1"
     }
 }

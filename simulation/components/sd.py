@@ -45,22 +45,23 @@ def sd_callback(sd_settings, value):
     # }
 
     with lock:
-        t = time.localtime()
-        print("=" * 20)
-        print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-        print(f"Code: {code}")
-        print(f"Runs on: {sd_settings['runs_on']}")
-        print(f"Displaying.")
-        print("=" * 20)
-        # time.sleep(1)
+        if not get_is_menu_opened():
+            t = time.localtime()
+            print("=" * 20)
+            print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+            print(f"Code: {code}")
+            print(f"Runs on: {sd_settings['runs_on']}")
+            print(f"Displaying.")
+            print("=" * 20)
+            # time.sleep(1)
 
-        # batch.append(('LCD', json.dumps(payload), 0, True))
-        # publish_data_counter += 1
-        #
-        # if publish_data_counter >= publish_data_limit:
-        #     publish_event.set()
+            # batch.append(('LCD', json.dumps(payload), 0, True))
+            # publish_data_counter += 1
+            #
+            # if publish_data_counter >= publish_data_limit:
+            #     publish_event.set()
 
-        set_threads_done()
+            set_threads_done()
 
 def run_sd(settings, threads, stop_event):
     code = settings['code']

@@ -2,6 +2,7 @@ import threading
 
 is_menu_opened = False
 LedIsOn = True
+rgbColors = [True,False,False]
 threads_done_event = threading.Event()
 
 
@@ -12,6 +13,14 @@ def get_is_menu_opened():
 def set_is_menu_opened(value):
     global is_menu_opened
     is_menu_opened = value
+
+def get_rgb_colors():
+    return rgbColors
+
+
+def set_rgb_colors(value):
+    global rgbColors
+    rgbColors = value
 
 
 def led_is_on():

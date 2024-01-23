@@ -1,5 +1,6 @@
 import threading
 
+from components.rgb import run_rgb
 from components.sd import run_sd
 from settings import load_settings
 from components.dht import run_dht
@@ -66,6 +67,7 @@ def open_menu():
         print("Menu contents:")
         print("1. Start buzzing")
         print("2. Switch led state")
+        print("3. Switch RGB state")
         # print("3. Option 3")
         print("Enter 'x' to close the menu.")
 
@@ -80,6 +82,10 @@ def open_menu():
         elif user_input == '2':
             dl_settings = settings['DL']
             run_dl(dl_settings, threads, stop_event)
+            wait_for_threads()
+        elif user_input == '3':
+            brgb_settings = settings['BRGB']
+            run_rgb(brgb_settings, threads, stop_event)
             wait_for_threads()
         else:
             print("Invalid input. Try again.")
