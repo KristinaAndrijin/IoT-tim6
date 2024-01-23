@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 
 # InfluxDB Configuration
-token = "5lCi-HU0dda0OLA3ivfhaU-j9rmOBmUdVw5jmmV2wr-0-Sr7I4vq-9MxlYUpVFaC5P1_ScfnWMsearluy7Dx5g=="
+token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ=="
 org = "FTN"
 url = "http://localhost:8086"
 bucket = "example_db"
@@ -24,7 +24,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Temperature")
     client.subscribe("Humidity")
     client.subscribe("Door opened")
-    client.subscribe("Character")
+    client.subscribe("Combination")
     client.subscribe("Distance")
     client.subscribe("Motion")
     client.subscribe("Door Buzzer")
