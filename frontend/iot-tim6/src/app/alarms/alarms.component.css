@@ -2,8 +2,9 @@
 
 .container {
     display: flex;
-    height: 90vh; /* Adjust as needed */
-  }
+    height: 85vh;
+    padding: 20px;
+}
   
   .grafana {
     flex: 2;

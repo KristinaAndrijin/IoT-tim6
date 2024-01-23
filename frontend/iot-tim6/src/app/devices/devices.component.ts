@@ -40,6 +40,9 @@ export class DevicesComponent implements OnInit {
 
   ngOnInit(): void {
     this.updateDevicesList();
+  }
+
+  ngAfterViewInit(): void {
     this.loadGrafanaDashboard();
   }
 
@@ -49,8 +52,23 @@ export class DevicesComponent implements OnInit {
 
   loadGrafanaDashboard() {
     if (this.grafanaIframe) {
-      const grafanaLink = 'http://localhost:3000/goto/cyM283cSR?orgId=1';
+      let grafanaLink = '';
+      switch (this.selectedPi) {
+        case 'PI1':
+          grafanaLink = 'http://localhost:3000/goto/cyM283cSR?orgId=1';
+          break;
+        case 'PI2':
+          grafanaLink = 'http://localhost:3000/goto/JAydze5SR?orgId=1';
+          break;
+        case 'PI3':
+          grafanaLink = 'http://localhost:3000/goto/GuVFzecIR?orgId=1';
+          break;
+      }
+  
       this.grafanaIframe.nativeElement.src = grafanaLink;
     }
   }
+  
+
+
 }

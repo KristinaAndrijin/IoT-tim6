@@ -1,1 +1,19 @@
-<p>manage works!</p>
+<div class="container">
+    <h2>Bedroom RGB</h2>
+  
+    <div class="color-controls">
+      <label for="colorCombobox">Select Color:</label>
+      <select id="colorCombobox" [(ngModel)]="selectedColor">
+        <option value="white">White</option>
+        <option value="red">Red</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+        <option value="yellow">Yellow</option>
+        <option value="purple">Purple</option>
+        <option value="lightBlue">Light Blue</option>
+        <option value="off">Off</option>
+      </select>
+      <button (click)="applyColor()">Apply</button>
+    </div>
+  </div>
+  

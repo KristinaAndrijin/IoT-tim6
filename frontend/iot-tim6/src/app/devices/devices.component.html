@@ -2,20 +2,19 @@
 
 <div class="container">
     <div class="grafana">
-        <iframe #grafanaIframe src="" width="100%" height="100%" frameborder="0"></iframe>
+      <iframe #grafanaIframe src="" width="100%" height="100%" frameborder="0"></iframe>
     </div>
   
     <div class="devices">
       <div class="machine-select">
         <p>Select a PI:</p>
-        <select [(ngModel)]="selectedPi" (change)="updateDevicesList()">
+        <select [(ngModel)]="selectedPi" (change)="updateDevicesList(); loadGrafanaDashboard()">
           <option value="PI1">PI1</option>
           <option value="PI2">PI2</option>
           <option value="PI3">PI3</option>
-          <!-- Add more Raspberry Pi options as needed -->
         </select>
       </div>
-      
+  
       <div class="devices-list">
         <div class="device-card" *ngFor="let device of devicesList">
           <p>{{ device.name }}</p>

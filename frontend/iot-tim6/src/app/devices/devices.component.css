@@ -1,6 +1,7 @@
 .container {
     display: flex;
-    height: 90vh; 
+    height: 85vh;
+    padding: 20px;
 }
 
 .grafana {
@@ -15,7 +16,8 @@
 }
 
 .machine-select {
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
+    margin-left: 25px;
 }
 
 .machine-select select {
@@ -23,13 +25,15 @@
     padding: 10px;
     box-sizing: border-box;
     font-size: 14px;
+    
 }
 
 .devices-list {
+    justify-self: flex-start;
     justify-content: center;
     display: flex;
     flex-wrap: wrap;
-    max-height: 80%; 
+    max-height: 85%; 
     overflow-y: auto;
 }
 
