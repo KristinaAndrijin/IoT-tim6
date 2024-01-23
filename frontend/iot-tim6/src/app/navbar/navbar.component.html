@@ -1,4 +1,8 @@
-<nav class="navbar">
+<div *ngIf="alarm" class="alarm-bar">
+    <a class="alarm-text" routerLink="/alarms">Alarm!</a>
+  </div>
+  
+  <nav class="navbar">
     <a class="logo" routerLink="/devices">iot tim6</a>
     <a routerLink="/devices">Devices</a>
     <a routerLink="/alarms">Alarms</a>

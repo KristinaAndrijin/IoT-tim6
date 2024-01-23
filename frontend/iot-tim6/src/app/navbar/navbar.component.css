@@ -1,3 +1,17 @@
+
+.alarm-bar {
+    background-color: red;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.alarm-text {
+    margin: 0;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
 .navbar {
     background-color: #2196F3;
     overflow: hidden;
@@ -6,16 +20,16 @@
 .navbar a {
     float: left;
     display: block;
-    color: white; 
+    color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
-
 .navbar .logo {
-    margin-right: 20px; 
-    color:darkblue;
+    margin-right: 20px;
+    color: darkblue;
 }
 
 .navbar a:hover:not(.logo) {
