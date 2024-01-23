@@ -8,12 +8,15 @@ import json
 import paho.mqtt.publish as publish
 
 dms_batch = []
-publish_data_counter = 0
-publish_data_limit = 5
+dms_string = ""
+string_size_counter = 0
+string_size_limit = 4
+publish_data_limit = 1
 #counter_lock = threading.Lock()
 
 def publisher_task(event, dms_batch):
     global publish_data_counter, publish_data_limit
+
     while True:
         event.wait()
         with lock:
@@ -33,27 +36,33 @@ publisher_thread.start()
 
 
 def dms_callback(character, dms_settings):
-    global publish_data_counter, publish_data_limit
-    character_payload = {
-        "measurement": "Character",
-        "simulated": dms_settings['simulated'],
-        "runs_on": dms_settings["runs_on"],
-        "code": dms_settings["code"],
-        "value": character
-    }
-    with lock:
-        if not get_is_menu_opened():
-            t = time.localtime()
-            print("=" * 20)
-            print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-            print(f"Code: {dms_settings['code']}")
-            print(f"Character: " + str(character))
-            print(f"Runs on: {dms_settings['runs_on']}")
+    global string_size_counter,string_size_limit, dms_string
 
-        dms_batch.append(('Character', json.dumps(character_payload), 0, True))
-        publish_data_counter += 1
+    dms_string += character
+    string_size_counter += 1
 
-    if publish_data_counter >= publish_data_limit:
+    if string_size_counter >= string_size_limit:
+        string_size_counter = 0
+
+        character_payload = {
+            "measurement": "Combination",
+            "simulated": dms_settings['simulated'],
+            "runs_on": dms_settings["runs_on"],
+            "code": dms_settings["code"],
+            "value": dms_string
+        }
+        with lock:
+            if not get_is_menu_opened():
+                t = time.localtime()
+                print("=" * 20)
+                print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+                print(f"Code: {dms_settings['code']}")
+                print(f"Combination: " + str(dms_string))
+                print(f"Runs on: {dms_settings['runs_on']}")
+
+            dms_batch.append(('Combination', json.dumps(character_payload), 0, True))
+
+        dms_string = ""
         publish_event.set()
 
 
