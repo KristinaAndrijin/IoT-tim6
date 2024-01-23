@@ -1,4 +1,6 @@
 import threading
+
+from components.sd import run_sd
 from settings import load_settings
 from components.dht import run_dht
 from components.ds import run_ds
@@ -53,6 +55,10 @@ def run_sensors(settings, threads, stop_event):
     # LCD
     lcd_settings = settings['LCD']
     run_lcd(lcd_settings, threads, stop_event)
+
+    # SD
+    sd_settings = settings['B4SD']
+    run_sd(sd_settings, threads, stop_event)
 
 def open_menu():
     global is_menu_opened

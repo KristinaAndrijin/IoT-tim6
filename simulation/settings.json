@@ -84,5 +84,13 @@
         "pin": 17,
         "code": "DL - Covered Porch",
         "runs_on": "PI1"
+    },
+
+    "B4SD": {
+        "simulated": true,
+        "segments": [11, 4, 23, 8, 7, 10, 18, 25],
+        "digits": [22, 27, 17, 24],
+        "code": "B4SD - Bedroom 4 Digit 7 Segment Display",
+        "runs_on": "PI1"
     }
 }

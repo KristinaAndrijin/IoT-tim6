@@ -36,22 +36,21 @@ class LCD(object):
     def get_time_now(self):  # get system time
         return datetime.now().strftime('    %H:%M:%S')
 
-    def loop(self):
-
-
     def destroy(self):
         self.lcd.clear()
 
 def run_lcd_loop(lcd_device, delay, callback, stop_event,settings):
+
     lcd_device.mcp.output(3, 1)  # turn on LCD backlight
     lcd_device.lcd.begin(16, 2)  # set number of LCD lines and columns
     while (True):
-        # lcd.clear()
+        #lcd_device.lcd.clear()
         lcd_device.lcd.setCursor(0, 0)  # set cursor position
         lcd_device.lcd.message('CPU: ' + lcd_device.get_cpu_temp() + '\n')  # display CPU temperature
         lcd_device.lcd.message(lcd_device.get_time_now())  # display the time
         callback(settings, "working_4real")
         if stop_event.is_set():
+            lcd_device.destroy()
             break
         sleep(delay)
 

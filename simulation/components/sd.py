@@ -2,6 +2,7 @@ import threading
 import time
 from components.lock import lock
 from globals import *
+from simulators.sd import run_sd_simulator
 from simulators.lcd import run_lcd_simulator
 
 from broker_settings import HOSTNAME, PORT
@@ -30,10 +31,10 @@ import paho.mqtt.publish as publish
 # publisher_thread.daemon = True
 # publisher_thread.start()
 
-def lcd_callback(lcd_settings,value):
+def sd_callback(sd_settings, value):
 
     #global publish_data_counter, publish_data_limit
-    code = lcd_settings["code"]
+    code = sd_settings["code"]
 
     # payload = {
     #     "measurement": "LCD",
@@ -48,7 +49,7 @@ def lcd_callback(lcd_settings,value):
         print("=" * 20)
         print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
         print(f"Code: {code}")
-        print(f"Runs on: {lcd_settings['runs_on']}")
+        print(f"Runs on: {sd_settings['runs_on']}")
         print(f"Displaying.")
         print("=" * 20)
         # time.sleep(1)
@@ -61,18 +62,17 @@ def lcd_callback(lcd_settings,value):
 
         set_threads_done()
 
-def run_lcd(settings, threads, stop_event):
+def run_sd(settings, threads, stop_event):
     code = settings['code']
     if settings['simulated']:
-        lcd_thread = threading.Thread(target=run_lcd_simulator, args=(2, lcd_callback, stop_event,settings))
-        lcd_thread.start()
-        threads.append(lcd_thread)
+        sd_thread = threading.Thread(target=run_sd_simulator, args=(2, sd_callback, stop_event, settings))
+        sd_thread.start()
+        threads.append(sd_thread)
     else:
-        from sensors.lcd import run_lcd_loop, LCD
+        from sensors.sd import run_4sd_loop, SegmentDisplay
         print("Starting " + code + "loop")
-        #self,pin_rs,pin_e,pins_db
-        lcd = LCD(settings['pin_rs'],settings['pin_e'],settings['pins_db'])
-        lcd_thread = threading.Thread(target=run_lcd_loop, args=(lcd, 2, lcd_callback, stop_event, settings))
-        lcd_thread.start()
-        threads.append(lcd_thread)
+        sd = SegmentDisplay(settings['segments'],settings['digits'])
+        sd_thread = threading.Thread(target=run_4sd_loop, args=(sd, 2, sd_callback, stop_event, settings))
+        sd_thread.start()
+        threads.append(sd_thread)
         print(code + " loop started")
