@@ -108,5 +108,11 @@
         "pin": 16,
         "code": "BIR - Bedroom InfraRed",
         "runs_on": "PI1"
+    },
+
+    "GSG": {
+        "simulated": true,
+        "code": "GSG - Gun Safe Gyro",
+        "runs_on": "PI1"
     }
 }
