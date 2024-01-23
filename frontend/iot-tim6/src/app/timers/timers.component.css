@@ -1,0 +1,44 @@
+/* timers.component.css */
+
+.container {
+    display: flex;
+    height: 90vh;
+}
+
+.timer-section {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ccc;
+    
+}
+
+/* Style for the time picker section */
+.timer-section div {
+    display: flex;
+    flex-direction: column;
+}
+
+.timer-section label {
+    margin-bottom: 10px;
+}
+
+.timer-section input {
+    padding: 8px;
+    margin-bottom: 10px;
+    max-width: 25%;
+}
+
+.timer-section button {
+    padding: 10px;
+    background-color: #2196F3;
+    color: white;
+    cursor: pointer;
+    border-style: none;
+    width: fit-content;
+}
+
+/* Style for the timer on section */
+.timer-section p {
+    font-weight: bold;
+    margin-bottom: 10px;
+}

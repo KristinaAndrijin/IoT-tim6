@@ -1,1 +1,20 @@
-<p>timers works!</p>
+<!-- timers.component.html -->
+
+<div class="container">
+    <div class="timer-section">
+        <ng-container *ngIf="!isTimerOn; else timerOnTemplate">
+            <div>
+                <label for="timePicker">Select time:</label>
+                <input type="time" id="timePicker" [(ngModel)]="selectedTimeString" />
+                <button (click)="setTimer()">Set</button>
+            </div>
+        </ng-container>
+
+        <ng-template #timerOnTemplate>
+            <div>
+                <p>Timer is currently on.</p>
+                <button (click)="toggleTimer()">Turn Off</button>
+            </div>
+        </ng-template>
+    </div>
+</div>
