@@ -1,0 +1,23 @@
+.navbar {
+    background-color: #2196F3;
+    overflow: hidden;
+}
+
+.navbar a {
+    float: left;
+    display: block;
+    color: white; 
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+
+.navbar .logo {
+    margin-right: 20px; 
+    color:darkblue;
+}
+
+.navbar a:hover:not(.logo) {
+    background-color: #0b7dda;
+}
