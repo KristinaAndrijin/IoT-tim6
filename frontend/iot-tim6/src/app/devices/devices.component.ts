@@ -1,6 +1,7 @@
 // devices.component.ts
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { CommsService } from '../comms.service';
 
 @Component({
   selector: 'app-devices',
@@ -8,6 +9,9 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
   styleUrls: ['./devices.component.css']
 })
 export class DevicesComponent implements OnInit {
+
+  constructor(private commsService: CommsService) {}
+
   selectedPi: string = 'PI1';
   devicesList: any[] = [];
 
@@ -28,8 +32,11 @@ export class DevicesComponent implements OnInit {
 
   @ViewChild('grafanaIframe', { static: false }) grafanaIframe: ElementRef | undefined;
 
+
   ngOnInit(): void {
     this.updateDevicesList();
+    this.commsService.connect();
+    this.commsService.subscribeToTopic('angular_setup');
   }
 
   ngAfterViewInit(): void {

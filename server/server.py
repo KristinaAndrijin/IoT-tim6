@@ -54,7 +54,7 @@ def transform_setup_data(data):
 
 def send_to_angular(transformed_data):
     try:
-        mqtt_topic = "angular_setup" 
+        mqtt_topic = "angular_setup"
         mqtt_payload = json.dumps(transformed_data)
         mqtt_client.publish(mqtt_topic, mqtt_payload)
         print("Setup data sent to Angular via MQTT")

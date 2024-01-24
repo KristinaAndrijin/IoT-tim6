@@ -9,6 +9,14 @@ import { AlarmsComponent } from './alarms/alarms.component';
 import { TimersComponent } from './timers/timers.component';
 import { ManageComponent } from './manage/manage.component';
 import { FormsModule } from '@angular/forms';
+import { MqttModule, IMqttServiceOptions } from 'ngx-mqtt';
+
+const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
+  hostname: 'localhost',
+  port: 9001, 
+  protocol: 'ws',
+
+};
 
 @NgModule({
   declarations: [
@@ -22,7 +30,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    MqttModule.forRoot(MQTT_SERVICE_OPTIONS),
   ],
   providers: [],
   bootstrap: [AppComponent]
