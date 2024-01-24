@@ -1,37 +1,29 @@
-// devices.component.ts
-
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { CommsService } from '../comms.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-devices',
   templateUrl: './devices.component.html',
   styleUrls: ['./devices.component.css']
 })
-export class DevicesComponent implements OnInit {
+export class DevicesComponent implements OnInit, OnDestroy {
   selectedPi: string = 'PI1';
   devicesList: any[] = [];
 
-  piDevicesMap: any = {
-    'PI1': [
-      { name: 'Device 1', simulated: true, temperature: 30, humidity: 50 },
-      { name: 'Device 2', simulated: false, temperature: 25, motionSensor: true },
-      { name: 'Device 1', simulated: true, temperature: 30, humidity: 50 },
-      { name: 'Device 2', simulated: false, temperature: 25, motionSensor: true },
-    ],
-    'PI2': [
-      { name: 'Device 3', simulated: true, temperature: 28, doorSensor: true },
-      { name: 'Device 4', simulated: false, temperature: 22, lightState: 'on' },
-    ],
-    'PI3': [
-    ],
-  };
-
   @ViewChild('grafanaIframe', { static: false }) grafanaIframe: ElementRef | undefined;
 
-  constructor(private commsService: CommsService) {}
+  private piDevicesSubscription: Subscription;
+
+  constructor(private commsService: CommsService) {
+    this.piDevicesSubscription = new Subscription();
+  }
+
 
   ngOnInit(): void {
+    this.piDevicesSubscription = this.commsService.piDevices$.subscribe(piDevices => {
+      this.devicesList = piDevices[this.selectedPi] || [];
+    });
     this.updateDevicesList();
   }
 
@@ -40,7 +32,9 @@ export class DevicesComponent implements OnInit {
   }
 
   updateDevicesList() {
-    this.devicesList = this.piDevicesMap[this.selectedPi];
+    this.commsService.piDevices$.subscribe(piDevices => {
+      this.devicesList = piDevices[this.selectedPi] || [];
+    });
   }
 
   loadGrafanaDashboard() {
@@ -68,4 +62,7 @@ export class DevicesComponent implements OnInit {
       .map(([key, value]) => ({ key, value }));
   }
 
+  ngOnDestroy(): void {
+    this.piDevicesSubscription.unsubscribe();
+  }
 }
