@@ -53,12 +53,14 @@ def transform_setup_data(data):
     return transformed_data
 
 def send_to_angular(transformed_data):
-    pass
-    # Implement logic to send the transformed data to your Angular component
-    # You might use Flask-SocketIO, Flask-RESTful, or another method for this
+    try:
+        mqtt_topic = "angular_setup" 
+        mqtt_payload = json.dumps(transformed_data)
+        mqtt_client.publish(mqtt_topic, mqtt_payload)
+        print("Setup data sent to Angular via MQTT")
+    except Exception as e:
+        print(f"Error sending data to Angular: {str(e)}")
 
-    # For example, if using Flask-SocketIO:
-    #socketio.emit("setup_data", transformed_data, namespace="/your_namespace")
 
 def save_to_db(data):
     print('zdravooo')
