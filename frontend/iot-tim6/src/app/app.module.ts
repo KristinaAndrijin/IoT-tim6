@@ -9,14 +9,10 @@ import { AlarmsComponent } from './alarms/alarms.component';
 import { TimersComponent } from './timers/timers.component';
 import { ManageComponent } from './manage/manage.component';
 import { FormsModule } from '@angular/forms';
-import { MqttModule, IMqttServiceOptions } from 'ngx-mqtt';
 
-const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
-  hostname: 'localhost',
-  port: 9001, 
-  protocol: 'ws',
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
-};
+const config: SocketIoConfig = { url: 'http://localhost:5000/angular', options: {} };
 
 @NgModule({
   declarations: [
@@ -31,7 +27,7 @@ const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    MqttModule.forRoot(MQTT_SERVICE_OPTIONS),
+    SocketIoModule.forRoot(config)
   ],
   providers: [],
   bootstrap: [AppComponent]

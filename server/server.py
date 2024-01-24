@@ -1,11 +1,12 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import paho.mqtt.client as mqtt
+from flask_socketio import SocketIO, emit
 import json
 
-
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # InfluxDB Configuration
 token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ=="
@@ -44,22 +45,23 @@ def process_the_message(topic, data):
         save_to_db(data)
 
 def transform_setup_data(data):
+    pi_name = data.get("pi_name", "")
     transformed_data = []
     for device_code, device_info in data.get("devices", {}).items():
         device_name = device_info.get("code", "")
         simulated = device_info.get("simulated", False)
         transformed_data.append({"name": device_name, "simulated": simulated})
+    final_data = {"pi_name":pi_name,"devices":transformed_data}
 
-    return transformed_data
+    return final_data
 
 def send_to_angular(transformed_data):
     try:
-        mqtt_topic = "angular_setup"
-        mqtt_payload = json.dumps(transformed_data)
-        mqtt_client.publish(mqtt_topic, mqtt_payload)
-        print("Setup data sent to Angular via MQTT")
+        socketio.emit("angular_setup", transformed_data, namespace='/angular')
+        print("Setup data sent to Angular via Websockets")
     except Exception as e:
         print(f"Error sending data to Angular: {str(e)}")
+
 
 
 def save_to_db(data):
@@ -74,7 +76,6 @@ def save_to_db(data):
     )
     write_api.write(bucket=bucket, org=org, record=point)
 
-# i dont think i used the code below
 # Route to store dummy data
 @app.route('/store_data', methods=['POST'])
 def store_data():
@@ -117,6 +118,16 @@ def retrieve_aggregate_data():
     |> mean()"""
     return handle_influx_query(query)
 
+# Use the '/angular' namespace for communication with Angular
+@socketio.on('connect', namespace='/angular')
+def handle_connect():
+    print('Client connected to Angular')
+
+@socketio.on('disconnect', namespace='/angular')
+def handle_disconnect():
+    print('Client disconnected from Angular')
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #app.run(debug=True)
+    socketio.run(app, debug=True)

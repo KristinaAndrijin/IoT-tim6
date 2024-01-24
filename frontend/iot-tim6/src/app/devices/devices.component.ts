@@ -9,9 +9,6 @@ import { CommsService } from '../comms.service';
   styleUrls: ['./devices.component.css']
 })
 export class DevicesComponent implements OnInit {
-
-  constructor(private commsService: CommsService) {}
-
   selectedPi: string = 'PI1';
   devicesList: any[] = [];
 
@@ -32,11 +29,10 @@ export class DevicesComponent implements OnInit {
 
   @ViewChild('grafanaIframe', { static: false }) grafanaIframe: ElementRef | undefined;
 
+  constructor(private commsService: CommsService) {}
 
   ngOnInit(): void {
     this.updateDevicesList();
-    this.commsService.connect();
-    this.commsService.subscribeToTopic('angular_setup');
   }
 
   ngAfterViewInit(): void {
@@ -71,4 +67,5 @@ export class DevicesComponent implements OnInit {
       .filter(([key, value]) => key !== 'name')
       .map(([key, value]) => ({ key, value }));
   }
+
 }
