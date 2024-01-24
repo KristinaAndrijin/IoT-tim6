@@ -29,10 +29,36 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Motion")
     client.subscribe("Door Buzzer")
     client.subscribe("LightState")
+    client.subscribe("setup")  # Subscribe to the "setup" topic
 
 mqtt_client.on_connect = on_connect
-mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
+mqtt_client.on_message = lambda client, userdata, msg: process_the_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
 
+def process_the_message(topic, data):
+    if topic == "setup":
+        print(data)
+        transformed_data = transform_setup_data(data)
+        print(transformed_data)
+        send_to_angular(transformed_data)
+    else:
+        save_to_db(data)
+
+def transform_setup_data(data):
+    transformed_data = []
+    for device_code, device_info in data.get("devices", {}).items():
+        device_name = device_info.get("code", "")
+        simulated = device_info.get("simulated", False)
+        transformed_data.append({"name": device_name, "simulated": simulated})
+
+    return transformed_data
+
+def send_to_angular(transformed_data):
+    pass
+    # Implement logic to send the transformed data to your Angular component
+    # You might use Flask-SocketIO, Flask-RESTful, or another method for this
+
+    # For example, if using Flask-SocketIO:
+    #socketio.emit("setup_data", transformed_data, namespace="/your_namespace")
 
 def save_to_db(data):
     print('zdravooo')
@@ -46,7 +72,7 @@ def save_to_db(data):
     )
     write_api.write(bucket=bucket, org=org, record=point)
 
-
+# i dont think i used the code below
 # Route to store dummy data
 @app.route('/store_data', methods=['POST'])
 def store_data():

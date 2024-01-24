@@ -1,5 +1,7 @@
+import json
 import threading
 
+from broker_settings import HOSTNAME, PORT
 from components.gyro import run_gyro
 from components.ir import run_ir
 from components.rgb import run_rgb
@@ -14,6 +16,7 @@ from components.db import run_db
 from components.dl import run_dl
 from components.lock import actuator_lock
 from components.lcd import run_lcd
+import paho.mqtt.publish as publish
 from globals import *
 import time
 
@@ -100,9 +103,25 @@ def open_menu():
         else:
             print("Invalid input. Try again.")
 
+def send_setup_to_server():
+    pi_name = "PI1"
+    settings = load_settings()
+
+    payload = {
+        "pi_name": pi_name,
+        "devices": settings
+    }
+
+    json_payload = json.dumps(payload)
+
+    publish.single("setup", json_payload, hostname=HOSTNAME, port=PORT)
+
+
 
 if __name__ == "__main__":
     print('Starting app')
+    #mozda bi trebalo posle kreiranja threadova
+    send_setup_to_server()
     settings = load_settings()
     threads = []
     stop_event = threading.Event()

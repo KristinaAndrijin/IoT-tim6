@@ -13,27 +13,17 @@ export class DevicesComponent implements OnInit {
 
   piDevicesMap: any = {
     'PI1': [
-      { name: 'Device 1', info: ['Info 1 - SkrapapaSkrapapaSkrapapaSkrapapaSkrapapa', 'Info 2 - Skrapapa', 'Info 3 - Skrapapa'] },
-      { name: 'Device 1', info: ['Info 1'] },
-      { name: 'Device 1', info: ['Info 1 - Skrapapa', 'Info 2 - Skrapapa', 'Info 3 - Skrapapa'] },
-      { name: 'Device 1', info: ['Info 1 - Skrapapa', 'Info 2 - Skrapapa', 'Info 3 - Skrapapa'] },
-      { name: 'Device 1', info: ['Info 1', 'Info 2', ] },
-      { name: 'Device 1', info: ['Info 1', 'Info 2', 'Info 3'] },
-      { name: 'Device 1', info: ['Info 1 - Skrapapa', 'Info 2 - Skrapapa', 'Info 3 - Skrapapa'] },
-      { name: 'Device 1', info: ['Info 1', ] },
-      { name: 'Device 1', info: ['Info 1', 'Info 2'] },
-      { name: 'Device 1', info: ['Info 1', 'Info 2', 'Info 3'] },
+      { name: 'Device 1', simulated: true, temperature: 30, humidity: 50 },
+      { name: 'Device 2', simulated: false, temperature: 25, motionSensor: true },
+      { name: 'Device 1', simulated: true, temperature: 30, humidity: 50 },
+      { name: 'Device 2', simulated: false, temperature: 25, motionSensor: true },
     ],
     'PI2': [
-      { name: 'Device 1', info: ['Info 1 - SkrapapaSkrapapaSkrapapaSkrapapaSkrapapa', 'Info 2 - Skrapapa', 'Info 3 - Skrapapa'] },
-      { name: 'Device 2', info: ['Info 1'] },
-      { name: 'Device 3', info: ['Info 1 - Skrapapa', 'Info 2 - Skrapapa', 'Info 3 - Skrapapa'] },
-      { name: 'Device 4', info: ['Info 1 - Skrapapa', 'Info 2 - Skrapapa', 'Info 3 - Skrapapa'] },
+      { name: 'Device 3', simulated: true, temperature: 28, doorSensor: true },
+      { name: 'Device 4', simulated: false, temperature: 22, lightState: 'on' },
     ],
     'PI3': [
-      // Devices for PI3
     ],
-    // Add more Raspberry Pi entries as needed
   };
 
   @ViewChild('grafanaIframe', { static: false }) grafanaIframe: ElementRef | undefined;
@@ -68,7 +58,10 @@ export class DevicesComponent implements OnInit {
       this.grafanaIframe.nativeElement.src = grafanaLink;
     }
   }
-  
 
-
+  getDeviceInfo(device: any): { key: string, value: any }[] {
+    return Object.entries(device)
+      .filter(([key, value]) => key !== 'name')
+      .map(([key, value]) => ({ key, value }));
+  }
 }
