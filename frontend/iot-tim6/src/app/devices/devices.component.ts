@@ -25,6 +25,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
       this.devicesList = piDevices[this.selectedPi] || [];
     });
     this.updateDevicesList();
+    console.log(this.devicesList);
   }
 
   ngAfterViewInit(): void {

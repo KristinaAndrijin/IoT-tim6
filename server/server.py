@@ -43,6 +43,7 @@ def process_the_message(topic, data):
         send_to_angular(transformed_data)
     else:
         save_to_db(data)
+        send_values_to_angular(data)
 
 def transform_setup_data(data):
     pi_name = data.get("pi_name", "")
@@ -59,6 +60,13 @@ def send_to_angular(transformed_data):
     try:
         socketio.emit("angular_setup", transformed_data, namespace='/angular')
         print("Setup data sent to Angular via Websockets")
+    except Exception as e:
+        print(f"Error sending data to Angular: {str(e)}")
+
+def send_values_to_angular(data):
+    try:
+        socketio.emit("values", data, namespace='/angular')
+        print("Data sent to Angular via Websockets")
     except Exception as e:
         print(f"Error sending data to Angular: {str(e)}")
 
