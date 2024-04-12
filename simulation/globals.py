@@ -1,7 +1,7 @@
 import threading
 
 is_menu_opened = False
-LedIsOn = True
+LedIsOn = False
 rgbColors = [True,False,False]
 threads_done_event = threading.Event()
 

@@ -45,24 +45,18 @@ pir_expiry_time = None
 def process_server_message(topic,data):
     global pir_expiry_time
     if data["for"] == "dl1":
-        print("timee",time.time(),pir_expiry_time)
-        if pir_expiry_time is not None and time.time() < pir_expiry_time:
-            print("ignorisem pir poruku")
-            print("ignore", time.time(), pir_expiry_time)
-        else:
-
-            turn_on_dl1(data["duration"])
-            pir_expiry_time = time.time() + data["duration"]
-            print("else", time.time(), pir_expiry_time)
+        switch_dl()
 
 
-def turn_on_dl1(duration):
+def switch_dl():
     dl_settings = settings['DL']
     run_dl(dl_settings, threads, stop_event)
     wait_for_threads()
-    time.sleep(duration)
-    run_dl(dl_settings, threads, stop_event)
-    wait_for_threads()
+    # stop_event.set()
+    # time.sleep(duration)
+    # stop_event.clear()
+    # run_dl(dl_settings, threads, stop_event)
+    # wait_for_threads()
 
 
 def run_sensors(settings, threads, stop_event):

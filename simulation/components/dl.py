@@ -8,7 +8,7 @@ import paho.mqtt.publish as publish
 
 dl_batch = []
 publish_data_counter = 0
-publish_data_limit = 1
+publish_data_limit = 2
 #counter_lock = threading.Lock()
 
 def publisher_task(event, dl_batch):
@@ -38,14 +38,30 @@ def dl_callback(dl_settings):
         print("=" * 20)
         print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
         print(f"Code: {dl_settings['code']}")
-        if led_is_on():
-            print("LED turned OFF")
-            set_led_state(False)
-            light_state = False
-        else:
-            print("LED turned ON")
-            set_led_state(True)
-            light_state = True
+        print("LED turned ON")
+        set_led_state(True)
+        light_state = True
+
+        light_state_payload = {
+            "measurement": "LightState",
+            "simulated": dl_settings['simulated'],
+            "runs_on": dl_settings["runs_on"],
+            "code": dl_settings["code"],
+            "value": True
+        }
+
+        dl_batch.append(('LightState', json.dumps(light_state_payload), 0, True))
+        publish_data_counter += 1
+
+        time.sleep(10)
+
+        t = time.localtime()
+        print("=" * 20)
+        print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+        print(f"Code: {dl_settings['code']}")
+        print("LED turned OFF")
+        set_led_state(False)
+        light_state = False
         print(f"Runs on: {dl_settings['runs_on']}")
         print("=" * 20)
 
@@ -54,10 +70,10 @@ def dl_callback(dl_settings):
             "simulated": dl_settings['simulated'],
             "runs_on": dl_settings["runs_on"],
             "code": dl_settings["code"],
-            "value": light_state
+            "value": False
         }
 
-        dl_batch.append(('LightState', json.dumps(light_state_payload), 0, True))
+        dl_batch.append(('LightState', json.dumps(light_state_payload), 1, False))
         publish_data_counter += 1
 
         if publish_data_counter >= publish_data_limit:
