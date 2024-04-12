@@ -40,7 +40,7 @@ def rgb_callback(rgb_settings):
 
         colors = get_rgb_colors()
         if (not colors):
-            set_rgb_colors([True,False,False])
+            set_rgb_colors([True,True,True])
         print("Colors:")
         print(f"Red: {colors[0]}")
         print(f"Green: {colors[1]}")
@@ -76,6 +76,6 @@ def run_rgb(settings, threads, stop_event):
         from actuators.rgb import RGBLight, run
         rgb = RGBLight(int(settings['red_pin']),int(settings['green_pin']),int(settings['blue_pin']))
         #ovo true false true na kraju su samo dummy, ovde će se upravljati sa rgb
-        rgb_thread = threading.Thread(target=run, args=(rgb, rgb_callback, settings,True,False,True))
+        rgb_thread = threading.Thread(target=run, args=(rgb, rgb_callback, settings))
         rgb_thread.start()
         threads.append(rgb_thread)

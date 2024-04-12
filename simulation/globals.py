@@ -2,6 +2,8 @@ import threading
 
 is_menu_opened = False
 LedIsOn = False
+lcd_message = ""
+lcd_should_change = False
 rgbColors = [True,False,False]
 threads_done_event = threading.Event()
 

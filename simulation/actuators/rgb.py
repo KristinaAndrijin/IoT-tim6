@@ -42,8 +42,9 @@ class RGBLight:
         GPIO.output(self.green_pin, gpio_green)
 
 
-def run(rgb, callback, settings,red,green,blue):
-    rgb.setColor(red,green,blue)
+def run(rgb, callback, settings):
+    colors = get_rgb_colors()
+    rgb.setColor(colors[0],colors[1],colors[2])
     # time.sleep(1)
     callback(settings)
     set_threads_done()

@@ -155,6 +155,16 @@ def retrieve_aggregate_data():
     |> mean()"""
     return handle_influx_query(query)
 
+@app.route('/test_mqtt', methods=['POST'])
+def send_mqtt_message():
+    data = request.json
+    topic = data.get('topic')
+    message = json.dumps(data.get('message'))
+    print(topic, message)
+
+    mqtt_client.publish(topic, message)
+    return jsonify({"status": "success", "message": "MQTT message sent successfully"})
+
 
 # Use the '/angular' namespace for communication with Angular
 @socketio.on('connect', namespace='/angular')

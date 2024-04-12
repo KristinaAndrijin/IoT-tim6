@@ -44,8 +44,19 @@ pir_expiry_time = None
 
 def process_server_message(topic,data):
     global pir_expiry_time
+    global lcd_message
+    global lcd_should_change
     if data["for"] == "dl1":
         switch_dl()
+    elif data["for"] == "glcd":
+        lcd_message = data["lcd_message"]
+        lcd_should_change = True
+    elif data["for"] == "rgb":
+        print("RGBBBBBBBBBBBBBBBBBBBBBBBBRGBBBBBBBBBBBBBBBBB")
+        set_rgb_colors(data["rgb_colors"])
+        brgb_settings = settings['BRGB']
+        run_rgb(brgb_settings, threads, stop_event)
+        wait_for_threads()
 
 
 def switch_dl():
