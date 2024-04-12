@@ -3,7 +3,6 @@ import time
 from components.lock import lock
 from globals import *
 from simulators.sd import run_sd_simulator
-from simulators.lcd import run_lcd_simulator
 
 from broker_settings import HOSTNAME, PORT
 import json

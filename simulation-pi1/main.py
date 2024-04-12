@@ -2,10 +2,6 @@ import json
 import threading
 
 from broker_settings import HOSTNAME, PORT
-from components.gyro import run_gyro
-from components.ir import run_ir
-from components.rgb import run_rgb
-from components.sd import run_sd
 from settings import load_settings
 from components.dht import run_dht
 from components.ds import run_ds
@@ -15,7 +11,6 @@ from components.pir import run_pir
 from components.db import run_db
 from components.dl import run_dl
 from components.lock import actuator_lock
-from components.lcd import run_lcd
 import paho.mqtt.publish as publish
 from globals import *
 import time
@@ -48,15 +43,6 @@ def process_server_message(topic,data):
     global lcd_should_change
     if data["for"] == "dl1":
         switch_dl()
-    elif data["for"] == "glcd":
-        lcd_message = data["lcd_message"]
-        lcd_should_change = True
-    elif data["for"] == "rgb":
-        print("RGBBBBBBBBBBBBBBBBBBBBBBBBRGBBBBBBBBBBBBBBBBB")
-        set_rgb_colors(data["rgb_colors"])
-        brgb_settings = settings['BRGB']
-        run_rgb(brgb_settings, threads, stop_event)
-        wait_for_threads()
 
 
 def switch_dl():
@@ -99,29 +85,12 @@ def run_sensors(settings, threads, stop_event):
     rpir_settings = settings['RPIR2']
     run_pir(rpir_settings, threads, stop_event)
 
-    # LCD
-    lcd_settings = settings['LCD']
-    run_lcd(lcd_settings, threads, stop_event)
-
-    # SD
-    sd_settings = settings['B4SD']
-    run_sd(sd_settings, threads, stop_event)
-
-    # BIR
-    bir_settings = settings['BIR']
-    run_ir(bir_settings, threads, stop_event)
-
-    # GSG
-    gsg_settings = settings['GSG']
-    run_gyro(gsg_settings, threads, stop_event)
-
 def open_menu():
     global is_menu_opened
     with actuator_lock:
         print("Menu contents:")
         print("1. Start buzzing")
         print("2. Switch led state")
-        print("3. Switch RGB state")
         # print("3. Option 3")
         print("Enter 'x' to close the menu.")
 
@@ -136,10 +105,6 @@ def open_menu():
         elif user_input == '2':
             dl_settings = settings['DL']
             run_dl(dl_settings, threads, stop_event)
-            wait_for_threads()
-        elif user_input == '3':
-            brgb_settings = settings['BRGB']
-            run_rgb(brgb_settings, threads, stop_event)
             wait_for_threads()
         else:
             print("Invalid input. Try again.")

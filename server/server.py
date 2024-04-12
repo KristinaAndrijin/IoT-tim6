@@ -11,8 +11,8 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # InfluxDB Configuration
-token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ==" # Vlada
-# token = "SQuqGj-Pi9okHh4f8trKHhVU2hXORmzyw207p1vBC9p16zrUS_WVOfYGhkz_8cRD7D9qmERBtln_TRS6rYzJGA=="  # Kris
+# token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ==" # Vlada
+token = "SQuqGj-Pi9okHh4f8trKHhVU2hXORmzyw207p1vBC9p16zrUS_WVOfYGhkz_8cRD7D9qmERBtln_TRS6rYzJGA=="  # Kris
 org = "FTN"
 url = "http://localhost:8086"
 bucket = "example_db"
@@ -36,6 +36,10 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Motion")
     client.subscribe("Door Buzzer")
     client.subscribe("LightState")
+    client.subscribe("Acceleration")
+    client.subscribe("Gyro")
+    client.subscribe("IrReading")
+    client.subscribe("RGBState")
     client.subscribe("setup")  # Subscribe to the "setup" topic
 
 
@@ -101,7 +105,8 @@ def send_values_to_angular(data):
 
 
 def save_to_db(data):
-    # print('zdravooo, snimanje na db')
+    print('zdravooo, snimanje na db')
+    print(data)
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
     point = (
         Point(data["measurement"])

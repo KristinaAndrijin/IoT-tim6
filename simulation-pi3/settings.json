@@ -1,0 +1,46 @@
+{
+    "RDHT4": {
+        "simulated": true,
+        "pin": 17,
+        "code": "RDHT4 - Owner's suite",
+        "runs_on": "PI3"
+    },
+
+    "RPIR4": {
+        "simulated": true,
+        "pin": 17,
+        "code": "RPIR4 - Dinette",
+        "runs_on": "PI3"
+    },
+
+    "BB": {
+        "simulated": true,
+        "pin": 17,
+        "code": "BB - Bedroom Buzzer",
+        "runs_on": "PI3"
+    },
+
+    "B4SD": {
+        "simulated": true,
+        "segments": [11, 4, 23, 8, 7, 10, 18, 25],
+        "digits": [22, 27, 17, 24],
+        "code": "B4SD - Bedroom 4 Digit 7 Segment Display",
+        "runs_on": "PI3"
+    },
+
+    "BRGB": {
+        "simulated": true,
+        "red_pin": 12,
+        "green_pin": 13,
+        "blue_pin": 19,
+        "code": "BRGB - Bedroom RGB",
+        "runs_on": "PI3"
+    },
+
+    "BIR": {
+        "simulated": true,
+        "pin": 16,
+        "code": "BIR - Bedroom InfraRed",
+        "runs_on": "PI3"
+    }
+}

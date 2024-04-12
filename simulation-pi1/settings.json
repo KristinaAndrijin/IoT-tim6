@@ -70,49 +70,10 @@
         "runs_on": "PI1"
     },
 
-    "LCD": {
-        "simulated": true,
-        "pin_e": 2,
-        "pin_rs": 0,
-        "pins_db" : [4, 5, 6, 7],
-        "code": "GLCD - Garage LCD",
-        "runs_on": "PI1"
-    },
-
     "DL": {
         "simulated": true,
         "pin": 17,
         "code": "DL - Covered Porch",
-        "runs_on": "PI1"
-    },
-
-    "B4SD": {
-        "simulated": true,
-        "segments": [11, 4, 23, 8, 7, 10, 18, 25],
-        "digits": [22, 27, 17, 24],
-        "code": "B4SD - Bedroom 4 Digit 7 Segment Display",
-        "runs_on": "PI1"
-    },
-
-    "BRGB": {
-        "simulated": true,
-        "red_pin": 12,
-        "green_pin": 13,
-        "blue_pin": 19,
-        "code": "BRGB - Bedroom RGB",
-        "runs_on": "PI1"
-    },
-
-    "BIR": {
-        "simulated": true,
-        "pin": 16,
-        "code": "BIR - Bedroom InfraRed",
-        "runs_on": "PI1"
-    },
-
-    "GSG": {
-        "simulated": true,
-        "code": "GSG - Gun Safe Gyro",
         "runs_on": "PI1"
     }
 }
