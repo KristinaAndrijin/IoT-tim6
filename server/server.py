@@ -54,7 +54,7 @@ def check_for_triggers(data):
         print("jagode")
         payload = {
             "for": "dl1",
-            "duration" : 10,
+            "duration" : 10*1000,
         }
         json_payload = json.dumps(payload)
         mqtt_client.publish("PI1", json_payload)

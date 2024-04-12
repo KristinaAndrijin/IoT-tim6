@@ -40,9 +40,30 @@ def on_connect(client, userdata, flags, rc):
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
+pir_expiry_time = None
 
 def process_server_message(topic,data):
-    print("aaaaaaaaaaaaaaa",topic,data)
+    global pir_expiry_time
+    if data["for"] == "dl1":
+        print("timee",time.time(),pir_expiry_time)
+        if pir_expiry_time is not None and time.time() < pir_expiry_time:
+            print("ignorisem pir poruku")
+            print("ignore", time.time(), pir_expiry_time)
+        else:
+
+            turn_on_dl1(data["duration"])
+            pir_expiry_time = time.time() + data["duration"]
+            print("else", time.time(), pir_expiry_time)
+
+
+def turn_on_dl1(duration):
+    dl_settings = settings['DL']
+    run_dl(dl_settings, threads, stop_event)
+    wait_for_threads()
+    time.sleep(duration)
+    run_dl(dl_settings, threads, stop_event)
+    wait_for_threads()
+
 
 def run_sensors(settings, threads, stop_event):
     # DHT
