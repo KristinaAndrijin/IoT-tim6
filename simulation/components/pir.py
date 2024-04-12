@@ -32,13 +32,13 @@ publisher_thread.daemon = True
 publisher_thread.start()
 
 
-def pir_callback(motion, dms_settings):
+def pir_callback(motion, pir_settings):
     global publish_data_counter, publish_data_limit
     character_payload = {
         "measurement": "Motion",
-        "simulated": dms_settings['simulated'],
-        "runs_on": dms_settings["runs_on"],
-        "code": dms_settings["code"],
+        "simulated": pir_settings['simulated'],
+        "runs_on": pir_settings["runs_on"],
+        "code": pir_settings["code"],
         "value": motion
     }
 
@@ -47,12 +47,12 @@ def pir_callback(motion, dms_settings):
             t = time.localtime()
             print("=" * 20)
             print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
-            print(f"Code: {dms_settings['code']}")
+            print(f"Code: {pir_settings['code']}")
             if motion:
                 print("You moved")
             else:
                 print("You stopped moving")
-            print(f"Runs on: {dms_settings['runs_on']}")
+            print(f"Runs on: {pir_settings['runs_on']}")
 
         pir_batch.append(('Motion', json.dumps(character_payload), 0, True))
         publish_data_counter += 1

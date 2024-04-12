@@ -4,6 +4,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 import paho.mqtt.client as mqtt
 from flask_socketio import SocketIO, emit
 import json
+import paho.mqtt.publish as publish
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -44,7 +45,20 @@ def process_the_message(topic, data):
         send_to_angular(transformed_data)
     else:
         save_to_db(data)
+        check_for_triggers(data)
         send_values_to_angular(data)
+
+def check_for_triggers(data):
+    # kada dpir1 detektuje pokret, uključiti dl1 na 10 sekundi
+    if data["code"] == "DPIR1 - Covered Porch":
+        print("jagode")
+        payload = {
+            "for": "dl1",
+            "duration" : 10,
+        }
+        json_payload = json.dumps(payload)
+        mqtt_client.publish("PI1", json_payload)
+
 
 def transform_setup_data(data):
     pi_name = data.get("pi_name", "")
@@ -67,14 +81,14 @@ def send_to_angular(transformed_data):
 def send_values_to_angular(data):
     try:
         socketio.emit("values", data, namespace='/angular')
-        print("Data sent to Angular via Websockets")
+        #print("Data sent to Angular via Websockets")
     except Exception as e:
         print(f"Error sending data to Angular: {str(e)}")
 
 
 
 def save_to_db(data):
-    print('zdravooo')
+    #print('zdravooo, snimanje na db')
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
     point = (
         Point(data["measurement"])

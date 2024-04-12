@@ -19,6 +19,7 @@ from components.lcd import run_lcd
 import paho.mqtt.publish as publish
 from globals import *
 import time
+import paho.mqtt.client as mqtt
 
 try:
     import RPi.GPIO as GPIO
@@ -28,6 +29,20 @@ except:
     pass
 
 is_menu_opened = False
+
+# MQTT Configuration
+mqtt_client = mqtt.Client()
+mqtt_client.connect("localhost", 1883, 60)
+mqtt_client.loop_start()
+
+def on_connect(client, userdata, flags, rc):
+    client.subscribe("PI1")
+
+mqtt_client.on_connect = on_connect
+mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
+
+def process_server_message(topic,data):
+    print("aaaaaaaaaaaaaaa",topic,data)
 
 def run_sensors(settings, threads, stop_event):
     # DHT
