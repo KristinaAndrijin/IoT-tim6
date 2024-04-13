@@ -44,7 +44,7 @@ def gyro_callback(accel, gyro,gyro_settings):
         "simulated": gyro_settings['simulated'],
         "runs_on": gyro_settings["runs_on"],
         "code": gyro_settings["code"],
-        "value": accel
+        "value": f"{accel[0]/16384.0},{accel[1]/16384.0},{accel[2]/16384.0}"
     }
 
     gyro_payload = {
@@ -52,7 +52,7 @@ def gyro_callback(accel, gyro,gyro_settings):
         "simulated": gyro_settings['simulated'],
         "runs_on": gyro_settings["runs_on"],
         "code": gyro_settings["code"],
-        "value": gyro
+        "value": f"{gyro[0]/131.0},{gyro[1]/131.0},{gyro[2]/131.0}"
     }
 
 
@@ -63,8 +63,8 @@ def gyro_callback(accel, gyro,gyro_settings):
             print("=" * 20)
             print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
             print(f"Code: {code}")
-            print(f"Acceleration: {accel}")
-            print(f"Gyro: {gyro}")
+            print(f"Acceleration: {accel[0]/16384.0},{accel[1]/16384.0},{accel[2]/16384.0}")
+            print(f"Gyro: {gyro[0]/131.0},{gyro[1]/131.0},{gyro[2]/131.0}")
             print(f"Runs on: {gyro_settings['runs_on']}")
 
 
