@@ -13,6 +13,8 @@ export class CommsService {
 
   constructor(private socket: Socket) {
     this.connectAndSubscribe();
+    this.loadSetupFromLocalStorage();
+    this.loadValuesFromLocalStorage();
   }
 
   private connectAndSubscribe() {
@@ -23,8 +25,6 @@ export class CommsService {
 
   private subscribeToTopic(topic: string) {
     this.socket.on(topic, (message: any) => {
-      //console.log('Received message:', message);
-
       if (topic === 'angular_setup') {
         this.handleAngularSetupMessage(message);
       }
@@ -36,35 +36,39 @@ export class CommsService {
   }
 
   private handleAngularSetupMessage(message: any) {
-    console.log("setUp");
     const piName = message.pi_name;
     const devices = message.devices;
 
     this.piDevicesSubject.next({ ...this.piDevicesSubject.value, [piName]: devices });
-    // console.log(this.piDevicesSubject.value);
+    this.saveSetupToLocalStorage();
   }
 
-
   private updateDeviceValues(message: any) {
-    console.log(message)
     const piName = message.runs_on;
     const measurement = message.measurement;
     const value = message.value;
     const name = message.code;
     const simulated = message.simulated;
+
     let map = this.piDevicesSubject.value;
-    let lists = map["PI1"];
+    let lists = map[piName];
+
+    if (!lists) {
+        console.error(`No devices found for PI: ${piName}`);
+        return;
+    }
+
     let devices: any[] = [];
     lists.forEach(element => {
-      if (element.name == name) {
+      if (element.name === name) {
         if (element.name.includes('DHT')) {
-          if (measurement == 'Humidity') {
+          if (measurement === 'Humidity') {
             devices.push({
               "name": name,
-              "humidity" :value,
+              "humidity": value,
               "temperature": this.previousTemperature,
               "simulated": simulated,
-            })
+            });
             this.previousHumidity = value;
           } else {
             devices.push({
@@ -72,25 +76,48 @@ export class CommsService {
               "humidity": this.previousHumidity,
               "temperature": value,
               "simulated": simulated,
-            })
-            this.previousTemperature = value
+            });
+            this.previousTemperature = value;
           }
         } else {
           devices.push({
             "name": name,
-            [measurement] :value,
+            [measurement]: value,
             "simulated": simulated,
-          })
+          });
         }
       } else {
-        devices.push(element)
+        devices.push(element);
       }
     });
 
     this.piDevicesSubject.next({ ...this.piDevicesSubject.value, [piName]: devices });
-    console.log(this.piDevicesSubject.value);
+    this.saveValuesToLocalStorage();
   }
 
+  saveSetupToLocalStorage() {
+    const setupData = this.piDevicesSubject.value;
+    localStorage.setItem('setupData', JSON.stringify(setupData));
+  }
+
+  loadSetupFromLocalStorage() {
+    const setupData = localStorage.getItem('setupData');
+    if (setupData) {
+      const parsedData = JSON.parse(setupData);
+      this.piDevicesSubject.next(parsedData);
+    }
+  }
+
+  saveValuesToLocalStorage() {
+    const valuesData = this.piDevicesSubject.value;
+    localStorage.setItem('valuesData', JSON.stringify(valuesData));
+  }
+
+  loadValuesFromLocalStorage() {
+    const valuesData = localStorage.getItem('valuesData');
+    if (valuesData) {
+      const parsedData = JSON.parse(valuesData);
+      this.piDevicesSubject.next(parsedData);
+    }
+  }
 }
-
-

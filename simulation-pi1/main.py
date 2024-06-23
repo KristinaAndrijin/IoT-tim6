@@ -85,8 +85,13 @@ def run_sensors(settings, threads, stop_event):
     rpir_settings = settings['RPIR2']
     run_pir(rpir_settings, threads, stop_event)
 
+    # DB
+    db_settings = settings['DB']
+    run_db(db_settings, threads, stop_event)
+
 def open_menu():
     global is_menu_opened
+    global is_alarm_on
     with actuator_lock:
         print("Menu contents:")
         print("1. Start buzzing")
@@ -97,14 +102,28 @@ def open_menu():
         user_input = input(" >> ").lower()
 
         if user_input == 'x':
+            pass
             set_is_menu_opened(False)
         elif user_input == '1':
-            db_settings = settings['DB']
-            run_db(db_settings, threads, stop_event)
-            wait_for_threads()
+            pass
+            #db_settings = settings['DB']
+            #run_db(db_settings, threads, stop_event)
+            #wait_for_threads()
         elif user_input == '2':
-            dl_settings = settings['DL']
-            run_dl(dl_settings, threads, stop_event)
+            pass
+            #dl_settings = settings['DL']
+            #run_dl(dl_settings, threads, stop_event)
+            #wait_for_threads()
+        elif user_input == '3':
+            iao = get_is_alarm_on()
+            xd = True
+            if iao:
+                xd = False
+            print("aaaaaaaa")
+            print(iao,xd)
+            set_is_alarm_on(xd)
+            print(get_is_alarm_on(),xd)
+            print("bbbbbbbb")
             wait_for_threads()
         else:
             print("Invalid input. Try again.")

@@ -11,8 +11,8 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # InfluxDB Configuration
-# token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ==" # Vlada
-token = "SQuqGj-Pi9okHh4f8trKHhVU2hXORmzyw207p1vBC9p16zrUS_WVOfYGhkz_8cRD7D9qmERBtln_TRS6rYzJGA=="  # Kris
+token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ==" # Vlada
+#token = "SQuqGj-Pi9okHh4f8trKHhVU2hXORmzyw207p1vBC9p16zrUS_WVOfYGhkz_8cRD7D9qmERBtln_TRS6rYzJGA=="  # Kris
 org = "FTN"
 url = "http://localhost:8086"
 bucket = "example_db"
@@ -40,7 +40,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Gyro")
     client.subscribe("IrReading")
     client.subscribe("RGBState")
-    client.subscribe("setup")  # Subscribe to the "setup" topic
+    client.subscribe("setup")
 
 
 mqtt_client.on_connect = on_connect
@@ -53,7 +53,7 @@ def process_the_message(topic, data):
         print(data)
         transformed_data = transform_setup_data(data)
         print(transformed_data)
-        send_to_angular(transformed_data)
+        send_setup_to_angular(transformed_data)
     else:
         save_to_db(data)
         check_for_triggers(data)
@@ -88,7 +88,7 @@ def transform_setup_data(data):
     return final_data
 
 
-def send_to_angular(transformed_data):
+def send_setup_to_angular(transformed_data):
     try:
         socketio.emit("angular_setup", transformed_data, namespace='/angular')
         print("Setup data sent to Angular via Websockets")

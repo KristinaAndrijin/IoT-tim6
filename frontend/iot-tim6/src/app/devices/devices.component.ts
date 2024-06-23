@@ -24,9 +24,11 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.piDevicesSubscription = this.commsService.piDevices$.subscribe(piDevices => {
       this.devicesList = piDevices[this.selectedPi] || [];
     });
+    this.commsService.loadSetupFromLocalStorage(); 
+    this.commsService.loadValuesFromLocalStorage();
     this.updateDevicesList();
-    console.log(this.devicesList);
   }
+  
 
   ngAfterViewInit(): void {
     this.loadGrafanaDashboard();

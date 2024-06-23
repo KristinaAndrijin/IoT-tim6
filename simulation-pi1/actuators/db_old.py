@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import time
 from globals import *
 
+
 class DoorBuzzer:
     def __init__(self, pin):
         self.buzzer_pin = pin
@@ -18,22 +19,11 @@ class DoorBuzzer:
             GPIO.output(self.buzzer_pin, False)
             time.sleep(delay)
 
-def run(db,callback,settings,delay,stop_event):
 
-    while True:
-        should_buzz = False
-        if get_is_alarm_on():
-            should_buzz = True
-
-        pitch = 440
-        duration = 1.5
-        db.buzz(pitch, duration)
-        callback(settings)
-        set_threads_done()
-
-        if stop_event.is_set():
-            break
-        time.sleep(delay)
-
-
-
+def run(db,callback,settings):
+    pitch = 440
+    duration = 0.1
+    db.buzz(pitch, duration)
+    # time.sleep(1)
+    callback(settings)
+    set_threads_done()

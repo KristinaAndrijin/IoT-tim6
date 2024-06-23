@@ -2,8 +2,23 @@ import threading
 
 is_menu_opened = False
 LedIsOn = False
+is_alarm_on = False
 threads_done_event = threading.Event()
+is_db_on = False
 
+def get_is_db_on():
+    return is_db_on
+
+def set_is_db_on(value):
+    global is_db_on
+    is_db_on = value
+
+def get_is_alarm_on():
+    return is_alarm_on
+
+def set_is_alarm_on(value):
+    global is_alarm_on
+    is_alarm_on = value
 
 def get_is_menu_opened():
     return is_menu_opened
