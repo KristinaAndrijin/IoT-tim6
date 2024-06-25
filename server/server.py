@@ -1,11 +1,12 @@
 import time
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, g, current_app
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import paho.mqtt.client as mqtt
 from flask_socketio import SocketIO, emit
 import json
+import os
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -23,8 +24,8 @@ mqtt_client = mqtt.Client()
 mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 
-pir_expiry_time = None
-current_state = "jagode"
+dus1_new_readings = 0
+dus2_new_readings = 0
 
 
 def on_connect(client, userdata, flags, rc):
@@ -56,24 +57,144 @@ def process_the_message(topic, data):
         send_setup_to_angular(transformed_data)
     else:
         save_to_db(data)
-        check_for_triggers(data)
+        with app.app_context():
+            check_for_triggers(data)
         send_values_to_angular(data)
 
 
+
 def check_for_triggers(data):
-    global pir_expiry_time
-    # kada dpir1 detektuje pokret, uključiti dl1 na 10 sekundi
-    if data["code"] == "DPIR1 - Covered Porch":
-        if pir_expiry_time is not None and time.time() < pir_expiry_time:
-            print("preskacemo ovo ipak")
+    try:
+        if data["code"] == "DPIR1 - Covered Porch":
+            handle_dpir1(data)
+
+        if data["code"] == "DPIR2 - Garage":
+            handle_dpir2(data)
+
+        global dus1_new_readings
+        check_dus1 = read_json_field("data.json","check_dus1")
+        if data["code"] == "DUS1 - Covered Porch" and check_dus1 and dus1_new_readings > 2:
+                handle_dus(1)
+                create_or_update_json_field("data.json","check_dus1",False)
+                dus1_new_readings = 0
+                print("broj ljudi je", read_json_field("data.json","num_of_people"))
+
+        global dus2_new_readings
+        check_dus2 = read_json_field("data.json", "check_dus2")
+        if data["code"] == "DUS2 - Garage" and check_dus2 and dus2_new_readings > 2:
+                handle_dus(2)
+                create_or_update_json_field("data.json","check_dus2",False)
+                dus2_new_readings = 0
+                print("broj ljudi je", read_json_field("data.json","num_of_people"))
+
+    except Exception as e:
+        print(f"Error in check_for_triggers: {str(e)}")
+
+
+def handle_dpir1(data):
+    if data["value"] is True:
+
+        num_of_people = read_json_field("data.json","num_of_people")
+
+        query = f"""
+                from(bucket: "example_db")
+                  |> range(start: -10m, stop: now())
+                  |> filter(fn: (r) => r["_measurement"] == "Distance")
+                  |> filter(fn: (r) => r["_field"] == "measurement")
+                  |> filter(fn: (r) => r["code"] == "DUS1 - Covered Porch")
+                  |> sort(columns: ["_time"], desc: true)
+                  |> limit(n: 3)
+                  |> yield(name: "dus1")
+        """
+
+        influx_data = handle_influx_query(query)
+
+        if influx_data["status"] == "success":
+            points = influx_data["data"]
+
+            if len(points) == 3:
+
+                if points[0] > points[1] > points[2]:
+                    print("Detektovane opadajuće vrednosti, neko izlazi.")
+                    create_or_update_json_field("data.json","num_of_people",num_of_people-1)
+
+            # Provera da li neko ulazi
+            create_or_update_json_field("data.json","check_dus1",True)
+
         else:
-            pir_expiry_time = time.time() + 10
-            print("jagode")
-            payload = {
-                "for": "dl1"
-            }
-            json_payload = json.dumps(payload)
-            mqtt_client.publish("PI1", json_payload)
+            print(f"InfluxDB query failed: {influx_data['message']}")
+
+
+
+def handle_dpir2(data):
+    if data["value"] is True:
+
+        num_of_people = read_json_field("data.json","num_of_people")
+
+        query = f"""
+                    from(bucket: "example_db")
+                      |> range(start: -10m, stop: now())
+                      |> filter(fn: (r) => r["_measurement"] == "Distance")
+                      |> filter(fn: (r) => r["_field"] == "measurement")
+                      |> filter(fn: (r) => r["code"] == "DUS2 - Garage")
+                      |> sort(columns: ["_time"], desc: true)
+                      |> limit(n: 3)
+                      |> yield(name: "dus2")
+                """
+
+        influx_data = handle_influx_query(query)
+
+        if influx_data["status"] == "success":
+            points = influx_data["data"]
+
+            if len(points) == 3:
+
+                if points[0] > points[1] > points[2]:
+                    print("Detektovane opadajuće vrednosti, neko izlazi.")
+                    create_or_update_json_field("data.json","num_of_people",num_of_people-1)
+
+            # provera da li neko ulazi
+            create_or_update_json_field("data.json","check_dus2",True)
+
+        else:
+            print(f"InfluxDB query failed: {influx_data['message']}")
+
+def handle_dus(number):
+
+        query = f"""
+                           from(bucket: "example_db")
+                             |> range(start: -10m, stop: now())
+                             |> filter(fn: (r) => r["_measurement"] == "Distance")
+                             |> filter(fn: (r) => r["_field"] == "measurement")
+                             |> filter(fn: (r) => r["code"] == "DUS1 - Covered Porch")
+                             |> sort(columns: ["_time"], desc: true)
+                             |> limit(n: 3)
+                             |> yield(name: "dus1")
+                   """
+        if number == 2:
+            query = f"""
+                           from(bucket: "example_db")
+                             |> range(start: -10m, stop: now())
+                             |> filter(fn: (r) => r["_measurement"] == "Distance")
+                             |> filter(fn: (r) => r["_field"] == "measurement")
+                             |> filter(fn: (r) => r["code"] == "DUS2 - Garage")
+                             |> sort(columns: ["_time"], desc: true)
+                             |> limit(n: 3)
+                             |> yield(name: "dus2")
+                   """
+
+        influx_data = handle_influx_query(query)
+
+        if influx_data["status"] == "success":
+            points = influx_data["data"]
+
+            if len(points) == 3:
+
+                if points[0] < points[1] < points[2]:
+                    print("Detektovane rastuće vrednosti, neko ulazi.")
+                    num_of_people = read_json_field("data.json","num_of_people")
+                    create_or_update_json_field("data.json","num_of_people",num_of_people+1)
+
 
 
 def transform_setup_data(data):
@@ -105,7 +226,7 @@ def send_values_to_angular(data):
 
 
 def save_to_db(data):
-    print('zdravooo, snimanje na db')
+    #print('zdravooo, snimanje na db')
     print(data)
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
     point = (
@@ -133,45 +254,45 @@ def handle_influx_query(query):
     try:
         query_api = influxdb_client.query_api()
         tables = query_api.query(query, org=org)
+        print("rezultat",tables)
 
         container = []
         for table in tables:
             for record in table.records:
-                container.append(record.values)
+                container.append(record.values["_value"])
+        print(container)
+        return {"status": "success", "data": container}
 
-        return jsonify({"status": "success", "data": container})
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
+        return {"status": "error", "message": str(e)}
 
 
-@app.route('/simple_query', methods=['GET'])
-def retrieve_simple_data():
-    query = f"""from(bucket: "{bucket}")
-    |> range(start: -10m)
-    |> filter(fn: (r) => r._measurement == "Humidity")"""
-    return handle_influx_query(query)
+def create_or_update_json_field(filename, field_name, field_value):
+    if not os.path.exists(filename):
+        print(f"JSON file '{filename}' not found. Creating new file...")
+        with open(filename, 'w') as f:
+            json.dump({}, f)
+        data = {}  # Initialize data as an empty dictionary
+    else:
+        with open(filename, 'r') as f:
+            data = json.load(f)
+
+    data[field_name] = field_value
+
+    with open(filename, 'w') as f:
+        json.dump(data, f, indent=4)
+
+def read_json_field(filename, field_name):
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            data = json.load(f)
+            #print("polje",field_name,"je",data.get(field_name, None))
+            return data.get(field_name, None)
+    else:
+        print(f"Error: File '{filename}' does not exist.")
+        return None
 
 
-@app.route('/aggregate_query', methods=['GET'])
-def retrieve_aggregate_data():
-    query = f"""from(bucket: "{bucket}")
-    |> range(start: -10m)
-    |> filter(fn: (r) => r._measurement == "Humidity")
-    |> mean()"""
-    return handle_influx_query(query)
-
-@app.route('/test_mqtt', methods=['POST'])
-def send_mqtt_message():
-    data = request.json
-    topic = data.get('topic')
-    message = json.dumps(data.get('message'))
-    print(topic, message)
-
-    mqtt_client.publish(topic, message)
-    return jsonify({"status": "success", "message": "MQTT message sent successfully"})
-
-
-# Use the '/angular' namespace for communication with Angular
 @socketio.on('connect', namespace='/angular')
 def handle_connect():
     print('Client connected to Angular')
@@ -182,5 +303,8 @@ def handle_disconnect():
     print('Client disconnected from Angular')
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    socketio.run(app, debug=True)
+    app.run(debug=True)
+    create_or_update_json_field("data.json", "num_of_people", 0)
+    create_or_update_json_field("data.json", "check_dus1", False)
+    create_or_update_json_field("data.json", "check_dus2", False)
+
