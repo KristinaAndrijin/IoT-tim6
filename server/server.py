@@ -26,6 +26,9 @@ mqtt_client.loop_start()
 
 dus1_new_readings = 0
 dus2_new_readings = 0
+should_check_dus1 = False
+should_check_dus2 = False
+num_of_people = 0
 
 
 def on_connect(client, userdata, flags, rc):
@@ -71,21 +74,25 @@ def check_for_triggers(data):
         if data["code"] == "DPIR2 - Garage":
             handle_dpir2(data)
 
-        global dus1_new_readings
-        check_dus1 = read_json_field("data.json","check_dus1")
-        if data["code"] == "DUS1 - Covered Porch" and check_dus1 and dus1_new_readings > 2:
+        global dus1_new_readings, should_check_dus1, num_of_people
+        if data["code"] == "DUS1 - Covered Porch" and should_check_dus1:
+            if dus1_new_readings > 2:
                 handle_dus(1)
-                create_or_update_json_field("data.json","check_dus1",False)
+                should_check_dus1 = False
                 dus1_new_readings = 0
-                print("broj ljudi je", read_json_field("data.json","num_of_people"))
+                print("broj ljudi je", num_of_people)
+            else:
+                dus1_new_readings += 1
 
-        global dus2_new_readings
-        check_dus2 = read_json_field("data.json", "check_dus2")
-        if data["code"] == "DUS2 - Garage" and check_dus2 and dus2_new_readings > 2:
+        global dus2_new_readings, should_check_dus2
+        if data["code"] == "DUS2 - Garage" and should_check_dus2:
+            if dus2_new_readings > 2:
                 handle_dus(2)
-                create_or_update_json_field("data.json","check_dus2",False)
+                should_check_dus2 = False
                 dus2_new_readings = 0
-                print("broj ljudi je", read_json_field("data.json","num_of_people"))
+                print("broj ljudi je", num_of_people)
+            else:
+                dus2_new_readings += 1
 
     except Exception as e:
         print(f"Error in check_for_triggers: {str(e)}")
@@ -94,7 +101,10 @@ def check_for_triggers(data):
 def handle_dpir1(data):
     if data["value"] is True:
 
-        num_of_people = read_json_field("data.json","num_of_people")
+        global num_of_people,should_check_dus1
+
+        # Provera da li neko ulazi
+        should_check_dus1 = True
 
         query = f"""
                 from(bucket: "example_db")
@@ -107,19 +117,18 @@ def handle_dpir1(data):
                   |> yield(name: "dus1")
         """
 
+        print("dpir1 zove")
         influx_data = handle_influx_query(query)
+
 
         if influx_data["status"] == "success":
             points = influx_data["data"]
+            print(points)
 
             if len(points) == 3:
-
                 if points[0] > points[1] > points[2]:
-                    print("Detektovane opadajuće vrednosti, neko izlazi.")
-                    create_or_update_json_field("data.json","num_of_people",num_of_people-1)
-
-            # Provera da li neko ulazi
-            create_or_update_json_field("data.json","check_dus1",True)
+                     print("Detektovane opadajuce vrednosti, neko izlazi.")
+                     num_of_people -= 1
 
         else:
             print(f"InfluxDB query failed: {influx_data['message']}")
@@ -129,7 +138,10 @@ def handle_dpir1(data):
 def handle_dpir2(data):
     if data["value"] is True:
 
-        num_of_people = read_json_field("data.json","num_of_people")
+        global num_of_people,should_check_dus2
+
+        # provera da li neko ulazi
+        should_check_dus2 = True
 
         query = f"""
                     from(bucket: "example_db")
@@ -141,26 +153,25 @@ def handle_dpir2(data):
                       |> limit(n: 3)
                       |> yield(name: "dus2")
                 """
-
+        print("dpir2 zove")
         influx_data = handle_influx_query(query)
 
         if influx_data["status"] == "success":
             points = influx_data["data"]
-
+            print(points)
             if len(points) == 3:
 
                 if points[0] > points[1] > points[2]:
-                    print("Detektovane opadajuće vrednosti, neko izlazi.")
-                    create_or_update_json_field("data.json","num_of_people",num_of_people-1)
-
-            # provera da li neko ulazi
-            create_or_update_json_field("data.json","check_dus2",True)
+                    print("Detektovane opadajuce vrednosti, neko izlazi.")
+                    num_of_people -= 1
 
         else:
             print(f"InfluxDB query failed: {influx_data['message']}")
 
 def handle_dus(number):
 
+
+        global num_of_people
         query = f"""
                            from(bucket: "example_db")
                              |> range(start: -10m, stop: now())
@@ -182,19 +193,18 @@ def handle_dus(number):
                              |> limit(n: 3)
                              |> yield(name: "dus2")
                    """
-
+        print("dus"+str(number)+" zove")
         influx_data = handle_influx_query(query)
 
         if influx_data["status"] == "success":
             points = influx_data["data"]
-
+            print(points)
             if len(points) == 3:
+                pass
 
                 if points[0] < points[1] < points[2]:
-                    print("Detektovane rastuće vrednosti, neko ulazi.")
-                    num_of_people = read_json_field("data.json","num_of_people")
-                    create_or_update_json_field("data.json","num_of_people",num_of_people+1)
-
+                    print("Detektovane rastuce vrednosti, neko ulazi.")
+                    num_of_people += 1
 
 
 def transform_setup_data(data):
@@ -254,43 +264,15 @@ def handle_influx_query(query):
     try:
         query_api = influxdb_client.query_api()
         tables = query_api.query(query, org=org)
-        print("rezultat",tables)
 
         container = []
         for table in tables:
             for record in table.records:
                 container.append(record.values["_value"])
-        print(container)
         return {"status": "success", "data": container}
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
-
-
-def create_or_update_json_field(filename, field_name, field_value):
-    if not os.path.exists(filename):
-        print(f"JSON file '{filename}' not found. Creating new file...")
-        with open(filename, 'w') as f:
-            json.dump({}, f)
-        data = {}  # Initialize data as an empty dictionary
-    else:
-        with open(filename, 'r') as f:
-            data = json.load(f)
-
-    data[field_name] = field_value
-
-    with open(filename, 'w') as f:
-        json.dump(data, f, indent=4)
-
-def read_json_field(filename, field_name):
-    if os.path.exists(filename):
-        with open(filename, 'r') as f:
-            data = json.load(f)
-            #print("polje",field_name,"je",data.get(field_name, None))
-            return data.get(field_name, None)
-    else:
-        print(f"Error: File '{filename}' does not exist.")
-        return None
 
 
 @socketio.on('connect', namespace='/angular')
@@ -304,7 +286,4 @@ def handle_disconnect():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    create_or_update_json_field("data.json", "num_of_people", 0)
-    create_or_update_json_field("data.json", "check_dus1", False)
-    create_or_update_json_field("data.json", "check_dus2", False)
 
