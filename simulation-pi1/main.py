@@ -89,6 +89,10 @@ def run_sensors(settings, threads, stop_event):
     db_settings = settings['DB']
     run_db(db_settings, threads, stop_event)
 
+    # DL
+    dl_settings = settings['DL']
+    run_dl(dl_settings, threads, stop_event)
+
 def open_menu():
     global is_menu_opened
     global is_alarm_on

@@ -6,8 +6,6 @@ from broker_settings import HOSTNAME, PORT
 import json
 import paho.mqtt.publish as publish
 
-from simulators.dl import run_dl_simulator
-
 dl_batch = []
 publish_data_counter = 0
 publish_data_limit = 2
@@ -32,45 +30,67 @@ publisher_thread.daemon = True
 publisher_thread.start()
 
 
-def dl_callback(dl_settings,value):
+def dl_callback(dl_settings):
     global publish_data_counter, publish_data_limit
+    light_state = True
     with lock:
         t = time.localtime()
         print("=" * 20)
         print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
         print(f"Code: {dl_settings['code']}")
-        if value is True:
-            print("LED turned ON")
-        else:
-            print("LED turned OFF")
-        set_led_state(value)
+        print("LED turned ON")
+        set_led_state(True)
+        light_state = True
 
         light_state_payload = {
             "measurement": "LightState",
             "simulated": dl_settings['simulated'],
             "runs_on": dl_settings["runs_on"],
             "code": dl_settings["code"],
-            "value": value
+            "value": True
         }
 
         dl_batch.append(('LightState', json.dumps(light_state_payload), 0, True))
         publish_data_counter += 1
 
+        time.sleep(10)
+
+        t = time.localtime()
+        print("=" * 20)
+        print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
+        print(f"Code: {dl_settings['code']}")
+        print("LED turned OFF")
+        set_led_state(False)
+        light_state = False
+        print(f"Runs on: {dl_settings['runs_on']}")
+        print("=" * 20)
+
+        light_state_payload = {
+            "measurement": "LightState",
+            "simulated": dl_settings['simulated'],
+            "runs_on": dl_settings["runs_on"],
+            "code": dl_settings["code"],
+            "value": False
+        }
+
+        dl_batch.append(('LightState', json.dumps(light_state_payload), 1, False))
+        publish_data_counter += 1
+
         if publish_data_counter >= publish_data_limit:
             publish_event.set()
-
+        # time.sleep(1)
         set_threads_done()
 
 
 def run_dl(settings, threads, stop_event):
     code = settings['code']
     if settings['simulated']:
-        dl_thread = threading.Thread(target=run_dl_simulator, args=(2, dl_callback, stop_event, settings))
+        dl_thread = threading.Thread(target=dl_callback, args=(settings,))
         dl_thread.start()
         threads.append(dl_thread)
     else:
         from actuators.dl import DoorLight, run
         dl = DoorLight(int(settings['pin']))
-        dl_thread = threading.Thread(target=run, args=(dl, dl_callback, settings,2,stop_event))
+        dl_thread = threading.Thread(target=run, args=(dl, dl_callback, settings))
         dl_thread.start()
         threads.append(dl_thread)

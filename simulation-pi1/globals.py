@@ -5,6 +5,14 @@ LedIsOn = False
 is_alarm_on = False
 threads_done_event = threading.Event()
 is_db_on = False
+dl_should_turn_off = None
+
+def get_dl_should_turn_off():
+    return dl_should_turn_off
+
+def set_dl_should_turn_off(value):
+    global dl_should_turn_off
+    dl_should_turn_off = value
 
 def get_is_db_on():
     return is_db_on

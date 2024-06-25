@@ -6,6 +6,7 @@ from globals import *
 from broker_settings import HOSTNAME, PORT
 import json
 import paho.mqtt.publish as publish
+from datetime import datetime, timedelta
 
 pir_batch = []
 publish_data_counter = 0
@@ -42,6 +43,11 @@ def pir_callback(motion, pir_settings):
         "value": motion
     }
 
+    if motion:
+        current_time = datetime.now()
+        future_time = current_time + timedelta(seconds=10)
+        set_dl_should_turn_off(future_time)
+
     with lock:
         if not get_is_menu_opened():
             t = time.localtime()
@@ -49,9 +55,9 @@ def pir_callback(motion, pir_settings):
             print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
             print(f"Code: {pir_settings['code']}")
             if motion:
-                print("You moved")
+                print("Movement detected")
             else:
-                print("You stopped moving")
+                print("No movement")
             print(f"Runs on: {pir_settings['runs_on']}")
 
         pir_batch.append(('Motion', json.dumps(character_payload), 0, True))

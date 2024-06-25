@@ -87,8 +87,8 @@ class InfraRed(object):
 def run_ir_loop(ir, delay, callback, stop_event, settings):
 	while True:
 		inData = ir.convertHex(ir.getBinary())
-		for button in range(len(ir.buttons)):  # Runs through every value in list
-			if hex(ir.buttons[button]) == inData:  # Checks this against incoming
+		for button in range(len(ir.buttons)):
+			if hex(ir.buttons[button]) == inData:
 				callback(ir.buttonsNames[button], settings)
 		if stop_event.is_set():
 			break
