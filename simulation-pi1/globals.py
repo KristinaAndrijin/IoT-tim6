@@ -6,6 +6,14 @@ is_alarm_on = False
 threads_done_event = threading.Event()
 is_db_on = False
 dl_should_turn_off = None
+num_of_people = 0
+
+def get_num_of_people():
+    return num_of_people
+
+def set_num_of_people(value):
+    global num_of_people
+    num_of_people = value
 
 def get_dl_should_turn_off():
     return dl_should_turn_off

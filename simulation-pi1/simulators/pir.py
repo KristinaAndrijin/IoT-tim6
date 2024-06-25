@@ -4,7 +4,7 @@ import random
 
 def generate_values():
     while True:
-        yield True if random.randint(0, 100) > 95 else False
+        yield True if random.randint(0, 100) > 70 else False
 
 
 def run_pir_simulator(delay, callback, stop_event, settings):
