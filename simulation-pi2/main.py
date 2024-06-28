@@ -29,20 +29,17 @@ mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 
 def on_connect(client, userdata, flags, rc):
-    client.subscribe("PI2")
+    client.subscribe("n_people")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
 pir_expiry_time = None
 
 def process_server_message(topic,data):
-    global pir_expiry_time
-    global lcd_message
-    global lcd_should_change
-        # @TODO Vlada getter
-    if data["for"] == "glcd":
-        lcd_message = data["lcd_message"]
-        lcd_should_change = True
+    if topic == "n_people":
+        if data["n_people"]:
+            set_num_of_people(data["n_people"])
+            print("skrapapa", get_num_of_people())
 
 
 def run_sensors(settings, threads, stop_event):

@@ -7,12 +7,16 @@ def generate_values():
 
     while True:
         n_people = get_num_of_people()
-        motion = random.randint(0, 100)
-        if motion > 70:
-            if n_people > 0:
-                direction = random.choice(["going_inside", "going_outside"])
-            else:
+        motion_chance = random.randint(0, 100)
+        if motion_chance > 80:
+            if n_people > 0 and n_people < 6:
+                options = ["going_inside", "going_outside"]
+                weights = [0.35, 0.65]
+                direction = random.choices(options, weights)[0]
+            elif n_people == 0:
                 direction = "going_inside"
+            elif n_people == 6:
+                direction = "going_outside"
 
             values = [random.randint(1, 100) for _ in range(3)]
 

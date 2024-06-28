@@ -4,7 +4,14 @@ is_menu_opened = False
 lcd_message = ""
 lcd_should_change = False
 threads_done_event = threading.Event()
+num_of_people = 0
 
+def get_num_of_people():
+    return num_of_people
+
+def set_num_of_people(value):
+    global num_of_people
+    num_of_people = value
 
 def get_is_menu_opened():
     return is_menu_opened

@@ -128,6 +128,7 @@ def handle_dpir1(data):
                     if (num_of_people > 0):
                         print("Detektovane opadajuce vrednosti, neko izlazi.")
                         num_of_people -= 1
+                        send_number_of_people()
                         print("broj ljudi je", num_of_people)
 
         else:
@@ -165,6 +166,7 @@ def handle_dpir2(data):
                     if (num_of_people > 0):
                         print("Detektovane opadajuce vrednosti, neko izlazi.")
                         num_of_people -= 1
+                        send_number_of_people()
                         print("broj ljudi je", num_of_people)
 
         else:
@@ -207,8 +209,15 @@ def handle_dus(number):
                 if points[0] < points[1] < points[2]:
                     print("Detektovane rastuce vrednosti, neko ulazi.")
                     num_of_people += 1
+                    send_number_of_people()
                     print("broj ljudi je", num_of_people)
-
+def send_number_of_people():
+    print("šaljem",num_of_people)
+    payload = {
+        "n_people": num_of_people
+    }
+    json_payload = json.dumps(payload)
+    mqtt_client.publish("n_people", json_payload)
 
 def transform_setup_data(data):
     pi_name = data.get("pi_name", "")

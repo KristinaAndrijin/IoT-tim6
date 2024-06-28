@@ -49,9 +49,9 @@ def pir_callback(motion, pir_settings):
             print(f"Timestamp: {time.strftime('%H:%M:%S', t)}")
             print(f"Code: {pir_settings['code']}")
             if motion:
-                print("You moved")
+                print("Movement detected")
             else:
-                print("You stopped moving")
+                print("No movement")
             print(f"Runs on: {pir_settings['runs_on']}")
 
         pir_batch.append(('Motion', json.dumps(character_payload), 0, True))

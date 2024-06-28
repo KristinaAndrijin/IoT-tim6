@@ -31,18 +31,16 @@ mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 
 def on_connect(client, userdata, flags, rc):
-    client.subscribe("PI1")
+    client.subscribe("n_people")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
-pir_expiry_time = None
 
 def process_server_message(topic,data):
-    global pir_expiry_time
-    global lcd_message
-    global lcd_should_change
-    if data["for"] == "dl1":
-        switch_dl()
+    if topic == "n_people":
+        if data["n_people"]:
+            set_num_of_people(data["n_people"])
+            print("skrapapa",get_num_of_people())
 
 
 def switch_dl():
