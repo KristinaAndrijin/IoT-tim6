@@ -41,8 +41,6 @@ class LCD(object):
         self.lcd.clear()
 
 def run_lcd_loop(lcd_device, delay, callback, stop_event,settings):
-    global lcd_should_change
-    global lcd_message
 
     lcd_device.mcp.output(3, 1)  # turn on LCD backlight
     lcd_device.lcd.begin(16, 2)  # set number of LCD lines and columns
@@ -51,10 +49,8 @@ def run_lcd_loop(lcd_device, delay, callback, stop_event,settings):
         lcd_device.lcd.setCursor(0, 0)  # set cursor position
         #lcd_device.lcd.message('CPU: ' + lcd_device.get_cpu_temp() + '\n')  # display CPU temperature
         #lcd_device.lcd.message(lcd_device.get_time_now())  # display the time
-        if lcd_should_change:
-
-            lcd_device.lcd.message(lcd_message)
-            lcd_should_change = False
+        message = "hum: " + str(get_gdht_humidity()) + "temp: " + str(get_gdht_temperature())
+        lcd_device.lcd.message(message)
         callback(settings, "working_4real")
         if stop_event.is_set():
             lcd_device.destroy()

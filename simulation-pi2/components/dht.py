@@ -36,6 +36,8 @@ def dht_callback(humidity, temperature,dht_settings):
     global publish_data_counter, publish_data_limit
 
     code = dht_settings["code"]
+    set_gdht_humidity(humidity)
+    set_gdht_temperature(temperature)
 
     temp_payload = {
         "measurement": "Temperature",

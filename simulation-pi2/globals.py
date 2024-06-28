@@ -5,6 +5,22 @@ lcd_message = ""
 lcd_should_change = False
 threads_done_event = threading.Event()
 num_of_people = 0
+gdht_humidity = 0
+gdht_temperature = 0
+
+def get_gdht_temperature():
+    return gdht_temperature
+
+def set_gdht_temperature(value):
+    global gdht_temperature
+    gdht_temperature = value
+
+def get_gdht_humidity():
+    return gdht_humidity
+
+def set_gdht_humidity(value):
+    global gdht_humidity
+    gdht_humidity = value
 
 def get_num_of_people():
     return num_of_people
