@@ -28,7 +28,7 @@ def run(db,callback,settings,delay,stop_event):
         pitch = 440
         duration = 1.5
         db.buzz(pitch, duration)
-        callback(settings)
+        callback(should_buzz,settings)
         set_threads_done()
 
         if stop_event.is_set():
