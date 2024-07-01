@@ -3,7 +3,7 @@ import time
 from globals import *
 
 
-class DoorBuzzer:
+class BedroomBuzzer:
     def __init__(self, pin):
         self.buzzer_pin = pin
         GPIO.setmode(GPIO.BCM)

@@ -8,7 +8,7 @@ from components.sd import run_sd
 from settings import load_settings
 from components.dht import run_dht
 from components.pir import run_pir
-from components.db import run_db
+from components.bb import run_bb
 from components.lock import actuator_lock
 import paho.mqtt.publish as publish
 from globals import *
@@ -65,6 +65,10 @@ def run_sensors(settings, threads, stop_event):
     bir_settings = settings['BIR']
     run_ir(bir_settings, threads, stop_event)
 
+    # BB
+    bb_settings = settings['BB']
+    run_bb(bb_settings, threads, stop_event)
+
 def open_menu():
     global is_menu_opened
     with actuator_lock:
@@ -79,12 +83,23 @@ def open_menu():
         if user_input == 'x':
             set_is_menu_opened(False)
         elif user_input == '1':
-            db_settings = settings['DB']
-            run_db(db_settings, threads, stop_event)
+            bb_settings = settings['BB']
+            run_bb(bb_settings, threads, stop_event)
             wait_for_threads()
         elif user_input == '2':
             brgb_settings = settings['BRGB']
             run_rgb(brgb_settings, threads, stop_event)
+            wait_for_threads()
+        elif user_input == '3':
+            iao = get_is_alarm_on()
+            xd = True
+            if iao:
+                xd = False
+            print("aaaaaaaa")
+            print(iao,xd)
+            set_is_alarm_on(xd)
+            print(get_is_alarm_on(),xd)
+            print("bbbbbbbb")
             wait_for_threads()
         else:
             print("Invalid input. Try again.")
