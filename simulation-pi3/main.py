@@ -31,6 +31,8 @@ mqtt_client.loop_start()
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("PI3")
+    client.subscribe("raise_alarm_ds_pi3")
+    client.subscribe("turn_alarm_off_pi3")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
@@ -40,12 +42,26 @@ def process_server_message(topic,data):
     global pir_expiry_time
     global lcd_message
     global lcd_should_change
-    if data["for"] == "rgb":
-        print("RGBBBBBBBBBBBBBBBBBBBBBBBBRGBBBBBBBBBBBBBBBBB")
-        set_rgb_colors(data["rgb_colors"])
-        brgb_settings = settings['BRGB']
-        run_rgb(brgb_settings, threads, stop_event)
-        wait_for_threads()
+    if topic == "raise_alarm_ds_pi3":
+        which_ds = data["ds"]
+        print("ALARM DS" + str(which_ds))
+        set_is_alarm_on(True)
+        set_ds_trigger(which_ds)
+    if topic == "turn_alarm_off_pi3":
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        which_ds = data["ds"]
+        if get_ds_trigger() == which_ds:
+            print("ALARM DS" + str(which_ds) + " TURNED OFF")
+            set_is_alarm_on(False)
+
+
+    # # vlado nes ovde ne radi
+    # if data["for"] == "rgb":
+    #     print("RGBBBBBBBBBBBBBBBBBBBBBBBBRGBBBBBBBBBBBBBBBBB")
+    #     set_rgb_colors(data["rgb_colors"])
+    #     brgb_settings = settings['BRGB']
+    #     run_rgb(brgb_settings, threads, stop_event)
+    #     wait_for_threads()
 
 
 def run_sensors(settings, threads, stop_event):

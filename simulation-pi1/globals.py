@@ -7,34 +7,44 @@ threads_done_event = threading.Event()
 is_db_on = False
 dl_should_turn_off = None
 num_of_people = 0
+ds_trigger = 1
+
 
 def get_num_of_people():
     return num_of_people
+
 
 def set_num_of_people(value):
     global num_of_people
     num_of_people = value
 
+
 def get_dl_should_turn_off():
     return dl_should_turn_off
+
 
 def set_dl_should_turn_off(value):
     global dl_should_turn_off
     dl_should_turn_off = value
 
+
 def get_is_db_on():
     return is_db_on
+
 
 def set_is_db_on(value):
     global is_db_on
     is_db_on = value
 
+
 def get_is_alarm_on():
     return is_alarm_on
+
 
 def set_is_alarm_on(value):
     global is_alarm_on
     is_alarm_on = value
+
 
 def get_is_menu_opened():
     return is_menu_opened
@@ -63,3 +73,12 @@ def wait_for_threads():
     global threads_done_event
     threads_done_event.wait()
     threads_done_event.clear()
+
+
+def get_ds_trigger():
+    return ds_trigger
+
+
+def set_ds_trigger(value):
+    global ds_trigger
+    ds_trigger = value

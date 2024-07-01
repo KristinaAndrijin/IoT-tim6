@@ -29,6 +29,8 @@ dus2_new_readings = 0
 should_check_dus1 = False
 should_check_dus2 = False
 num_of_people = 0
+last_ds1 = False
+last_ds2 = False
 
 
 def on_connect(client, userdata, flags, rc):
@@ -219,11 +221,12 @@ def handle_dus(number):
 
 
 def handle_ds(ds_type):
+    global last_ds1, last_ds2
     query = ""
     if (ds_type == 1):
         query = f"""
                    from(bucket: "example_db")
-                     |> range(start: -6s, stop: now())
+                     |> range(start: -5s, stop: now())
                      |> filter(fn: (r) => r["_measurement"] == "Door opened")
                      |> filter(fn: (r) => r["_field"] == "measurement")
                      |> filter(fn: (r) => r["code"] == "DS1 - Foyer")
@@ -245,6 +248,20 @@ def handle_ds(ds_type):
     if influx_data["status"] == "success":
         points = influx_data["data"]
         print(points)
+
+        if False in points and ((last_ds1 and ds_type == 1) or (last_ds2 and ds_type == 2)):
+            print("STOP ALARM")
+            payload = {
+                "ds": ds_type
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("turn_alarm_off_pi1", json_payload)
+            mqtt_client.publish("turn_alarm_off_pi3", json_payload)
+            if ds_type == 1:
+                last_ds1 = False
+            else:
+                last_ds2 = False
+
         should_raise_alarm = all(points)
         if should_raise_alarm:
             print("ALARM!!!!!!!!!!!!!!!!!!")
@@ -252,7 +269,15 @@ def handle_ds(ds_type):
                 "ds": ds_type
             }
             json_payload = json.dumps(payload)
-            mqtt_client.publish("raise_alarm_ds", json_payload)
+            mqtt_client.publish("raise_alarm_ds_pi1", json_payload)
+            mqtt_client.publish("raise_alarm_ds_pi3", json_payload)
+
+            if ds_type == 1:
+                last_ds1 = True
+            else:
+                last_ds2 = True
+
+
 
 
 def send_number_of_people():

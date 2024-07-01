@@ -32,7 +32,8 @@ mqtt_client.loop_start()
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("n_people")
-    client.subscribe("raise_alarm_ds")
+    client.subscribe("raise_alarm_ds_pi1")
+    client.subscribe("turn_alarm_off_pi1")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
@@ -42,10 +43,17 @@ def process_server_message(topic,data):
         if data["n_people"]:
             set_num_of_people(data["n_people"])
             print("skrapapa",get_num_of_people())
-    if topic == "raise_alarm_ds":
+    if topic == "raise_alarm_ds_pi1":
         which_ds = data["ds"]
         print("ALARM DS" + str(which_ds))
         set_is_alarm_on(True)
+        set_ds_trigger(which_ds)
+    if topic == "turn_alarm_off_pi1":
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        which_ds = data["ds"]
+        if get_ds_trigger() == which_ds:
+            print("ALARM DS" + str(which_ds) + " TURNED OFF")
+            set_is_alarm_on(False)
 
 
 def switch_dl():
