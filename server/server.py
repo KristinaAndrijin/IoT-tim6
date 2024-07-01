@@ -92,6 +92,11 @@ def check_for_triggers(data):
             else:
                 dus2_new_readings += 1
 
+        if data["code"] == "DS1 - Foyer":
+            handle_ds(1)
+        elif data["code"] == "DS2 - Family Foyer":
+            handle_ds(2)
+
     except Exception as e:
         print(f"Error in check_for_triggers: {str(e)}")
 
@@ -211,6 +216,45 @@ def handle_dus(number):
                     num_of_people += 1
                     send_number_of_people()
                     print("broj ljudi je", num_of_people)
+
+
+def handle_ds(ds_type):
+    query = ""
+    if (ds_type == 1):
+        query = f"""
+                   from(bucket: "example_db")
+                     |> range(start: -6s, stop: now())
+                     |> filter(fn: (r) => r["_measurement"] == "Door opened")
+                     |> filter(fn: (r) => r["_field"] == "measurement")
+                     |> filter(fn: (r) => r["code"] == "DS1 - Foyer")
+                     |> sort(columns: ["_time"], desc: true)
+                     |> yield(name: "ds1")
+                """
+    else:
+        query = f"""
+                   from(bucket: "example_db")
+                     |> range(start: -5s, stop: now())
+                     |> filter(fn: (r) => r["_measurement"] == "Door opened")
+                     |> filter(fn: (r) => r["_field"] == "measurement")
+                     |> filter(fn: (r) => r["code"] == "DS2 - Family Foyer")
+                     |> sort(columns: ["_time"], desc: true)
+                     |> yield(name: "ds2")
+                """
+    influx_data = handle_influx_query(query)
+
+    if influx_data["status"] == "success":
+        points = influx_data["data"]
+        print(points)
+        should_raise_alarm = all(points)
+        if should_raise_alarm:
+            print("ALARM!!!!!!!!!!!!!!!!!!")
+            payload = {
+                "ds": ds_type
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("raise_alarm_ds", json_payload)
+
+
 def send_number_of_people():
     print("šaljem",num_of_people)
     payload = {
