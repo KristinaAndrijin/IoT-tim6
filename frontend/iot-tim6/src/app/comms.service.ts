@@ -54,8 +54,8 @@ export class CommsService {
     let lists = map[piName];
 
     if (!lists) {
-        console.error(`No devices found for PI: ${piName}`);
-        return;
+      console.error(`No devices found for PI: ${piName}`);
+      return;
     }
 
     let devices: any[] = [];
@@ -123,5 +123,13 @@ export class CommsService {
 
   sendRGBValues(rgbValues: boolean[]): void {
     this.socket.emit('set_rgb', { rgb: rgbValues });
+  }
+
+  sendTimer(selectedDateTime: Date): void {
+    this.socket.emit('set_timer', { time:selectedDateTime });
+  }
+
+  turnOffTimer(): void {
+    this.socket.emit('turn_off_timer');
   }
 }

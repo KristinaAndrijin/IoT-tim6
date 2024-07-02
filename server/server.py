@@ -227,6 +227,14 @@ def send_rgb_values(rgb):
     json_payload = json.dumps(payload)
     mqtt_client.publish("rgb", json_payload)
 
+def send_timer_value(time):
+    print("šaljem",time)
+    payload = {
+        "time": time
+    }
+    json_payload = json.dumps(payload)
+    mqtt_client.publish("set_time", json_payload)
+
 def transform_setup_data(data):
     pi_name = data.get("pi_name", "")
     transformed_data = []
@@ -311,6 +319,23 @@ def handle_set_rgb(data):
         rgb_values = data['rgb']
         print("Received RGB values:", rgb_values)
         send_rgb_values(rgb_values)
+    except Exception as e:
+        print(f"Error handling set_rgb event: {str(e)}")
+
+@socketio.on('set_timer', namespace='/angular')
+def handle_set_timer(data):
+    try:
+        data_time = data['time']
+        print("Received timer datetime:", data_time)
+        send_timer_value(data_time)
+        print("xdxdxdxd     tip",type(data_time))
+    except Exception as e:
+        print(f"Error handling set_rgb event: {str(e)}")
+
+@socketio.on('turn_off_timer', namespace='/angular')
+def handle_turn_off_timer():
+    try:
+        print("Received timer turn off message:")
     except Exception as e:
         print(f"Error handling set_rgb event: {str(e)}")
 
