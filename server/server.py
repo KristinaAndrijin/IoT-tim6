@@ -103,6 +103,8 @@ def check_for_triggers(data):
             else:
                 dus2_new_readings += 1
 
+        # ALARMS
+
         if code == "DS1 - Foyer":
             handle_ds(1)
             handle_ds_dms(data)
@@ -284,6 +286,7 @@ def handle_ds(ds_type):
                 last_ds1 = False
             else:
                 last_ds2 = False
+            save_alarm_to_db("DS", False)
 
         should_raise_alarm = all(points)
         if should_raise_alarm:
@@ -300,6 +303,8 @@ def handle_ds(ds_type):
             else:
                 last_ds2 = True
 
+            save_alarm_to_db("DS", True)
+
 
 def handle_ds_dms(data):
     print("DMS DS")
@@ -314,6 +319,7 @@ def handle_ds_dms(data):
         json_payload = json.dumps(payload)
         mqtt_client.publish("raise_alarm_dms_ds_pi1", json_payload)
         mqtt_client.publish("raise_alarm_dms_ds_pi3", json_payload)
+        save_alarm_to_db("DS-DMS", True)
 
 
 def handle_dms_code(code):
@@ -327,6 +333,7 @@ def handle_dms_code(code):
         json_payload = json.dumps(payload)
         mqtt_client.publish("turn_off_alarm_dms_ds_pi1", json_payload)
         mqtt_client.publish("turn_off_alarm_dms_ds_pi3", json_payload)
+        save_alarm_to_db("DMS", False)
 
 
 def handle_rpir(signal):
@@ -339,6 +346,7 @@ def handle_rpir(signal):
         mqtt_client.publish("raise_alarm_rpir_pi1", json_payload)
         mqtt_client.publish("raise_alarm_rpir_pi3", json_payload)
         set_rpir_alarm_raised(True)
+        save_alarm_to_db("RPIR", True)
 
 
 def calculate_magnitude(x, y, z):
@@ -358,6 +366,7 @@ def handle_gsg(data):
             json_payload = json.dumps(payload)
             mqtt_client.publish("raise_alarm_gyro_pi1", json_payload)
             mqtt_client.publish("raise_alarm_gyro_pi3", json_payload)
+            save_alarm_to_db("GSG", True)
     if data['measurement'] == 'Gyro':
         gyro_magnitude = calculate_magnitude(float(value[0]), float(value[1]), float(value[2]))
         if gyro_magnitude > get_gyro_threshold():
@@ -369,6 +378,7 @@ def handle_gsg(data):
             json_payload = json.dumps(payload)
             mqtt_client.publish("raise_alarm_gyro_pi1", json_payload)
             mqtt_client.publish("raise_alarm_gyro_pi3", json_payload)
+            save_alarm_to_db("GSG", True)
 
 def send_number_of_people():
     print("šaljem",num_of_people)
@@ -440,6 +450,19 @@ def save_to_db(data):
         .tag("runs_on", data["runs_on"])
         .tag("code", data["code"])
         .field("measurement", data["value"])
+    )
+    write_api.write(bucket=bucket, org=org, record=point)
+
+
+
+def save_alarm_to_db(type, value):
+    #print('zdravooo, snimanje na db')
+    print(type, value)
+    write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
+    point = (
+        Point("Alarm")
+        .tag("alarm_type", type)
+        .field("measurement", value)
     )
     write_api.write(bucket=bucket, org=org, record=point)
 
