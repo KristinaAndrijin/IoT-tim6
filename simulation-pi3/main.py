@@ -32,7 +32,10 @@ mqtt_client.loop_start()
 def on_connect(client, userdata, flags, rc):
     client.subscribe("PI3")
     client.subscribe("raise_alarm_ds_pi3")
-    client.subscribe("turn_alarm_off_pi3")
+    client.subscribe("turn_alarm_off_ds_pi3")
+    client.subscribe("raise_alarm_dms_ds_pi3")
+    client.subscribe("turn_off_alarm_dms_ds_pi3")
+
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
@@ -45,14 +48,19 @@ def process_server_message(topic,data):
     if topic == "raise_alarm_ds_pi3":
         which_ds = data["ds"]
         print("ALARM DS" + str(which_ds))
-        set_is_alarm_on(True)
+        set_is_ds_alarm_on(True)
         set_ds_trigger(which_ds)
-    if topic == "turn_alarm_off_pi3":
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    if topic == "turn_alarm_off_ds_pi3":
         which_ds = data["ds"]
         if get_ds_trigger() == which_ds:
             print("ALARM DS" + str(which_ds) + " TURNED OFF")
-            set_is_alarm_on(False)
+            set_is_ds_alarm_on(False)
+    if topic == "raise_alarm_dms_ds_pi3":
+        print("DMS ALARM")
+        set_dms_alarm_on(True)
+    if topic == "turn_off_alarm_dms_ds_pi3":
+        print("DMS ALARM IS TURNED OFF")
+        set_dms_alarm_on(False)
 
 
     # # vlado nes ovde ne radi

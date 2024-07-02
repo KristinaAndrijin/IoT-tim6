@@ -6,9 +6,11 @@ lcd_message = ""
 lcd_should_change = False
 rgbColors = [True, False, False]
 threads_done_event = threading.Event()
-is_alarm_on = False
+is_ds_alarm_on = False
 is_bb_on = False
 ds_trigger = 1
+is_alarm_on = False
+dms_alarm_on = False
 
 
 def get_is_menu_opened():
@@ -74,3 +76,21 @@ def get_ds_trigger():
 def set_ds_trigger(value):
     global ds_trigger
     ds_trigger = value
+
+
+def get_is_ds_alarm_on():
+    return is_ds_alarm_on
+
+
+def set_is_ds_alarm_on(value):
+    global is_ds_alarm_on
+    is_ds_alarm_on = value
+
+
+def is_dms_alarm_on():
+    return dms_alarm_on
+
+
+def set_dms_alarm_on(value):
+    global dms_alarm_on
+    dms_alarm_on = value

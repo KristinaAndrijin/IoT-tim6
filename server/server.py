@@ -1,3 +1,4 @@
+import threading
 import time
 
 from flask import Flask, jsonify, request, render_template, g, current_app
@@ -7,6 +8,7 @@ import paho.mqtt.client as mqtt
 from flask_socketio import SocketIO, emit
 import json
 import os
+from globals import *
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -31,6 +33,8 @@ should_check_dus2 = False
 num_of_people = 0
 last_ds1 = False
 last_ds2 = False
+
+
 
 
 def on_connect(client, userdata, flags, rc):
@@ -66,18 +70,21 @@ def process_the_message(topic, data):
             check_for_triggers(data)
         send_values_to_angular(data)
 
-
+def turn_on_security(data):
+    set_security_system_activated(True)
+    check_code(data['value'])
 
 def check_for_triggers(data):
+    code = data["code"]
     try:
-        if data["code"] == "DPIR1 - Covered Porch":
+        if code == "DPIR1 - Covered Porch":
             handle_dpir1(data)
 
-        if data["code"] == "DPIR2 - Garage":
+        if code == "DPIR2 - Garage":
             handle_dpir2(data)
 
         global dus1_new_readings, should_check_dus1, num_of_people
-        if data["code"] == "DUS1 - Covered Porch" and should_check_dus1:
+        if code == "DUS1 - Covered Porch" and should_check_dus1:
             if dus1_new_readings > 1:
                 handle_dus(1)
                 should_check_dus1 = False
@@ -86,7 +93,7 @@ def check_for_triggers(data):
                 dus1_new_readings += 1
 
         global dus2_new_readings, should_check_dus2
-        if data["code"] == "DUS2 - Garage" and should_check_dus2:
+        if code == "DUS2 - Garage" and should_check_dus2:
             if dus2_new_readings > 1:
                 handle_dus(2)
                 should_check_dus2 = False
@@ -94,10 +101,18 @@ def check_for_triggers(data):
             else:
                 dus2_new_readings += 1
 
-        if data["code"] == "DS1 - Foyer":
+        if code == "DS1 - Foyer":
             handle_ds(1)
-        elif data["code"] == "DS2 - Family Foyer":
+            handle_ds_dms(data)
+        elif code == "DS2 - Family Foyer":
             handle_ds(2)
+            handle_ds_dms(data)
+
+        if code == "DMS - Foyer":
+            timer = threading.Timer(10.0, turn_on_security, args=(data,))
+            timer.start()
+            if is_dms_alarm_raised():
+                handle_dms_code(data['value'])
 
     except Exception as e:
         print(f"Error in check_for_triggers: {str(e)}")
@@ -255,8 +270,8 @@ def handle_ds(ds_type):
                 "ds": ds_type
             }
             json_payload = json.dumps(payload)
-            mqtt_client.publish("turn_alarm_off_pi1", json_payload)
-            mqtt_client.publish("turn_alarm_off_pi3", json_payload)
+            mqtt_client.publish("turn_alarm_off_ds_pi1", json_payload)
+            mqtt_client.publish("turn_alarm_off_ds_pi3", json_payload)
             if ds_type == 1:
                 last_ds1 = False
             else:
@@ -264,7 +279,7 @@ def handle_ds(ds_type):
 
         should_raise_alarm = all(points)
         if should_raise_alarm:
-            print("ALARM!!!!!!!!!!!!!!!!!!")
+            print("ALARM! DS")
             payload = {
                 "ds": ds_type
             }
@@ -278,7 +293,31 @@ def handle_ds(ds_type):
                 last_ds2 = True
 
 
+def handle_ds_dms(data):
+    print("DMS DS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    if is_dms_alarm_raised():
+        return
+    if data['value'] and (not is_code_correct()) and is_security_system_active(): # ako ima signala na DS
+        set_dms_is_alarm_raised(True)
+        print("DMS ALARM")
+        payload = {
+            "ds": data['code']
+        }
+        json_payload = json.dumps(payload)
+        mqtt_client.publish("raise_alarm_dms_ds_pi1", json_payload)
+        mqtt_client.publish("raise_alarm_dms_ds_pi3", json_payload)
 
+
+def handle_dms_code(code):
+    print(code)
+    check_code(code)
+    if is_code_correct():
+        payload = {
+            "code": code
+        }
+        json_payload = json.dumps(payload)
+        mqtt_client.publish("turn_off_alarm_dms_ds_pi1", json_payload)
+        mqtt_client.publish("turn_off_alarm_dms_ds_pi3", json_payload)
 
 def send_number_of_people():
     print("šaljem",num_of_people)
