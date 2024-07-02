@@ -45,14 +45,14 @@ export class DevicesComponent implements OnInit, OnDestroy {
       let grafanaLink = '';
       switch (this.selectedPi) {
         case 'PI1':
-          // grafanaLink = 'http://localhost:3000/goto/cyM283cSR?orgId=1'; // Vlada
-          grafanaLink = 'http://localhost:3000/goto/g5bZJDaSg?orgId=1' // Kris 
+          grafanaLink = 'http://localhost:3000/goto/cyM283cSR?orgId=1'; // Vlada
+          //grafanaLink = 'http://localhost:3000/goto/g5bZJDaSg?orgId=1' // Kris 
           break;
         case 'PI2':
-          grafanaLink = 'http://localhost:3000/goto/JAydze5SR?orgId=1';
+          grafanaLink = 'http://localhost:3000/goto/RZqEajwIR?orgId=1';
           break;
         case 'PI3':
-          grafanaLink = 'http://localhost:3000/goto/GuVFzecIR?orgId=1';
+          grafanaLink = "http://localhost:3000/goto/QH5EfCQSR?orgId=1";
           break;
       }
   
@@ -64,6 +64,13 @@ export class DevicesComponent implements OnInit, OnDestroy {
     return Object.entries(device)
       .filter(([key, value]) => key !== 'name')
       .map(([key, value]) => ({ key, value }));
+  }
+
+  trimValue(value: any): string {
+    if (value != null) {
+      return value.length > 50 ? value.slice(0, 25) + '...' : value;
+    }
+    return '';
   }
 
   ngOnDestroy(): void {

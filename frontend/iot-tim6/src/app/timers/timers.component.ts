@@ -9,7 +9,7 @@ import { CommsService } from '../comms.service';
   styleUrls: ['./timers.component.css']
 })
 export class TimersComponent {
-  isTimerOn: boolean = true;
+  isTimerOn: boolean = false;
   selectedTimeString: string = ''; 
 
   constructor(private commsService: CommsService) { }

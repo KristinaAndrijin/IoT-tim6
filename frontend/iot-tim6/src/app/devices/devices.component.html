@@ -18,7 +18,9 @@
         <h2>{{ device.name }}</h2>
         <div class="device-properties">
           <ng-container *ngFor="let keyValuePair of device | keyvalue">
-            <p *ngIf="keyValuePair.key !== 'name'">{{ keyValuePair.key }}: {{ keyValuePair.value }}</p>
+            <p *ngIf="keyValuePair.key !== 'name'">
+              {{ keyValuePair.key }}: {{ trimValue(keyValuePair.value) }}
+            </p>
           </ng-container>
         </div>
       </div>
