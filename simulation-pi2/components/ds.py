@@ -10,7 +10,7 @@ import paho.mqtt.publish as publish
 
 batch = []
 publish_data_counter = 0
-publish_data_limit = 5
+publish_data_limit = 1
 
 def publisher_task(event, batch):
     global publish_data_counter, publish_data_limit

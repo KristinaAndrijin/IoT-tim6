@@ -1,3 +1,5 @@
+import math
+import threading
 import time
 from datetime import datetime
 
@@ -8,13 +10,14 @@ import paho.mqtt.client as mqtt
 from flask_socketio import SocketIO, emit
 import json
 import os
+from globals import *
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # InfluxDB Configuration
-token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ==" # Vlada
-#token = "SQuqGj-Pi9okHh4f8trKHhVU2hXORmzyw207p1vBC9p16zrUS_WVOfYGhkz_8cRD7D9qmERBtln_TRS6rYzJGA=="  # Kris
+# token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ==" # Vlada
+token = "SQuqGj-Pi9okHh4f8trKHhVU2hXORmzyw207p1vBC9p16zrUS_WVOfYGhkz_8cRD7D9qmERBtln_TRS6rYzJGA=="  # Kris
 org = "FTN"
 url = "http://localhost:8086"
 bucket = "example_db"
@@ -30,6 +33,10 @@ dus2_new_readings = 0
 should_check_dus1 = False
 should_check_dus2 = False
 num_of_people = 0
+last_ds1 = False
+last_ds2 = False
+
+
 
 
 def on_connect(client, userdata, flags, rc):
@@ -65,18 +72,21 @@ def process_the_message(topic, data):
             check_for_triggers(data)
         send_values_to_angular(data)
 
-
+def turn_on_security(data):
+    set_security_system_activated(True)
+    check_code(data['value'])
 
 def check_for_triggers(data):
+    code = data["code"]
     try:
-        if data["code"] == "DPIR1 - Covered Porch":
+        if code == "DPIR1 - Covered Porch":
             handle_dpir1(data)
 
-        if data["code"] == "DPIR2 - Garage":
+        if code == "DPIR2 - Garage":
             handle_dpir2(data)
 
         global dus1_new_readings, should_check_dus1, num_of_people
-        if data["code"] == "DUS1 - Covered Porch" and should_check_dus1:
+        if code == "DUS1 - Covered Porch" and should_check_dus1:
             if dus1_new_readings > 1:
                 handle_dus(1)
                 should_check_dus1 = False
@@ -85,13 +95,32 @@ def check_for_triggers(data):
                 dus1_new_readings += 1
 
         global dus2_new_readings, should_check_dus2
-        if data["code"] == "DUS2 - Garage" and should_check_dus2:
+        if code == "DUS2 - Garage" and should_check_dus2:
             if dus2_new_readings > 1:
                 handle_dus(2)
                 should_check_dus2 = False
                 dus2_new_readings = 0
             else:
                 dus2_new_readings += 1
+
+        if code == "DS1 - Foyer":
+            handle_ds(1)
+            handle_ds_dms(data)
+        elif code == "DS2 - Family Foyer":
+            handle_ds(2)
+            handle_ds_dms(data)
+
+        if code == "DMS - Foyer":
+            timer = threading.Timer(10.0, turn_on_security, args=(data,))
+            timer.start()
+            if is_dms_alarm_raised():
+                handle_dms_code(data['value'])
+
+        if code == "RPIR1 - Bedroom Doors" or code == "RPIR2 - Open railing" or "RPIR3 - Kitchen" or "RPIR4 - Dinette":
+            handle_rpir(data['value'])
+
+        if code == "GSG - Gun Safe Gyro":
+            handle_gsg(data)
 
     except Exception as e:
         print(f"Error in check_for_triggers: {str(e)}")
@@ -212,6 +241,135 @@ def handle_dus(number):
                     num_of_people += 1
                     send_number_of_people()
                     print("broj ljudi je", num_of_people)
+
+
+def handle_ds(ds_type):
+    global last_ds1, last_ds2
+    query = ""
+    if (ds_type == 1):
+        query = f"""
+                   from(bucket: "example_db")
+                     |> range(start: -5s, stop: now())
+                     |> filter(fn: (r) => r["_measurement"] == "Door opened")
+                     |> filter(fn: (r) => r["_field"] == "measurement")
+                     |> filter(fn: (r) => r["code"] == "DS1 - Foyer")
+                     |> sort(columns: ["_time"], desc: true)
+                     |> yield(name: "ds1")
+                """
+    else:
+        query = f"""
+                   from(bucket: "example_db")
+                     |> range(start: -5s, stop: now())
+                     |> filter(fn: (r) => r["_measurement"] == "Door opened")
+                     |> filter(fn: (r) => r["_field"] == "measurement")
+                     |> filter(fn: (r) => r["code"] == "DS2 - Family Foyer")
+                     |> sort(columns: ["_time"], desc: true)
+                     |> yield(name: "ds2")
+                """
+    influx_data = handle_influx_query(query)
+
+    if influx_data["status"] == "success":
+        points = influx_data["data"]
+        print(points)
+
+        if False in points and ((last_ds1 and ds_type == 1) or (last_ds2 and ds_type == 2)):
+            print("STOP ALARM")
+            payload = {
+                "ds": ds_type
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("turn_alarm_off_ds_pi1", json_payload)
+            mqtt_client.publish("turn_alarm_off_ds_pi3", json_payload)
+            if ds_type == 1:
+                last_ds1 = False
+            else:
+                last_ds2 = False
+
+        should_raise_alarm = all(points)
+        if should_raise_alarm:
+            print("ALARM! DS")
+            payload = {
+                "ds": ds_type
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("raise_alarm_ds_pi1", json_payload)
+            mqtt_client.publish("raise_alarm_ds_pi3", json_payload)
+
+            if ds_type == 1:
+                last_ds1 = True
+            else:
+                last_ds2 = True
+
+
+def handle_ds_dms(data):
+    print("DMS DS")
+    if is_dms_alarm_raised():
+        return
+    if data['value'] and (not is_code_correct()) and is_security_system_active(): # ako ima signala na DS
+        set_dms_is_alarm_raised(True)
+        print("DMS ALARM")
+        payload = {
+            "ds": data['code']
+        }
+        json_payload = json.dumps(payload)
+        mqtt_client.publish("raise_alarm_dms_ds_pi1", json_payload)
+        mqtt_client.publish("raise_alarm_dms_ds_pi3", json_payload)
+
+
+def handle_dms_code(code):
+    print(code)
+    check_code(code)
+    if is_code_correct():
+        set_dms_is_alarm_raised(False)
+        payload = {
+            "code": code
+        }
+        json_payload = json.dumps(payload)
+        mqtt_client.publish("turn_off_alarm_dms_ds_pi1", json_payload)
+        mqtt_client.publish("turn_off_alarm_dms_ds_pi3", json_payload)
+
+
+def handle_rpir(signal):
+    if signal and num_of_people == 0:
+        print("RPIR")
+        payload = {
+            "alarm": True
+        }
+        json_payload = json.dumps(payload)
+        mqtt_client.publish("raise_alarm_rpir_pi1", json_payload)
+        mqtt_client.publish("raise_alarm_rpir_pi3", json_payload)
+        set_rpir_alarm_raised(True)
+
+
+def calculate_magnitude(x, y, z):
+    return math.sqrt(x ** 2 + y ** 2 + z ** 2)
+
+def handle_gsg(data):
+    print("GYROOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+    value = data['value'].split(',')
+    if data['measurement'] == 'Acceleration':
+        accel_magnitude = calculate_magnitude(float(value[0]), float(value[1]), float(value[2]))
+        if accel_magnitude > get_acc_threshold():
+            print("ALARM ACC " + str(accel_magnitude))
+            set_gyro_alarm_raised(True)
+            payload = {
+                "acc": accel_magnitude
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("raise_alarm_gyro_pi1", json_payload)
+            mqtt_client.publish("raise_alarm_gyro_pi3", json_payload)
+    if data['measurement'] == 'Gyro':
+        gyro_magnitude = calculate_magnitude(float(value[0]), float(value[1]), float(value[2]))
+        if gyro_magnitude > get_gyro_threshold():
+            print("ALARM ROT " + str(gyro_magnitude))
+            set_gyro_alarm_raised(True)
+            payload = {
+                "gyro": gyro_magnitude
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("raise_alarm_gyro_pi1", json_payload)
+            mqtt_client.publish("raise_alarm_gyro_pi3", json_payload)
+
 def send_number_of_people():
     print("šaljem",num_of_people)
     payload = {

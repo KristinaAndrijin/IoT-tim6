@@ -4,11 +4,18 @@ is_menu_opened = False
 LedIsOn = False
 lcd_message = ""
 lcd_should_change = False
-rgbColors = [True,False,False]
+rgbColors = [True, False, False]
 threads_done_event = threading.Event()
 color_changed = False
 is_timer_on = False
 timer_time = None
+is_ds_alarm_on = False
+is_bb_on = False
+ds_trigger = 1
+is_alarm_on = False
+dms_alarm_on = False
+rpir_alarm_on = False
+gyro_alarm_on = False
 
 def get_timer_time():
     return timer_time
@@ -42,6 +49,7 @@ def set_is_menu_opened(value):
     global is_menu_opened
     is_menu_opened = value
 
+
 def get_rgb_colors():
     return rgbColors
 
@@ -72,3 +80,66 @@ def wait_for_threads():
     global threads_done_event
     threads_done_event.wait()
     threads_done_event.clear()
+
+
+def get_is_alarm_on():
+    return is_alarm_on
+
+
+def set_is_alarm_on(value):
+    global is_alarm_on
+    is_alarm_on = value
+
+
+def get_is_bb_on():
+    return is_bb_on
+
+
+def set_is_bb_on(value):
+    global is_bb_on
+    is_bb_on = value
+
+
+def get_ds_trigger():
+    return ds_trigger
+
+
+def set_ds_trigger(value):
+    global ds_trigger
+    ds_trigger = value
+
+
+def get_is_ds_alarm_on():
+    return is_ds_alarm_on
+
+
+def set_is_ds_alarm_on(value):
+    global is_ds_alarm_on
+    is_ds_alarm_on = value
+
+
+def is_dms_alarm_on():
+    return dms_alarm_on
+
+
+def set_dms_alarm_on(value):
+    global dms_alarm_on
+    dms_alarm_on = value
+
+
+def is_rpir_alarm_on():
+    return rpir_alarm_on
+
+
+def set_rpir_alarm_on(value):
+    global rpir_alarm_on
+    rpir_alarm_on = value
+
+
+def is_gyro_alarm_on():
+    return gyro_alarm_on
+
+
+def set_gyro_alarm_on(value):
+    global gyro_alarm_on
+    gyro_alarm_on = value

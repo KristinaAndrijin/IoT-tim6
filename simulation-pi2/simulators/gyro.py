@@ -6,8 +6,8 @@ def generate_values(initial_accel=[0, 0, 0], initial_gyro=[0, 0, 0]):
     gyro = initial_gyro
 
     while True:
-        accel = [a + random.randint(-1, 1) for a in accel]
-        gyro = [g + random.randint(-1, 1) for g in gyro]
+        accel = [a + random.randint(-32768, 32767) for a in accel]
+        gyro = [g + random.randint(-1000, 1000) for g in gyro]
 
         # Ensure values are within a reasonable range
         accel = [max(accel_val, 0) for accel_val in accel]

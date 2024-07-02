@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 pir_batch = []
 publish_data_counter = 0
-publish_data_limit = 5
+publish_data_limit = 1
 #counter_lock = threading.Lock()
 
 def publisher_task(event, pir_batch):
