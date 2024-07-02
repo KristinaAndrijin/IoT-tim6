@@ -120,4 +120,8 @@ export class CommsService {
       this.piDevicesSubject.next(parsedData);
     }
   }
+
+  sendRGBValues(rgbValues: boolean[]): void {
+    this.socket.emit('set_rgb', { rgb: rgbValues });
+  }
 }

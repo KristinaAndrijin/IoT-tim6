@@ -31,21 +31,18 @@ mqtt_client.loop_start()
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("PI3")
+    client.subscribe("rgb")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
-pir_expiry_time = None
 
 def process_server_message(topic,data):
-    global pir_expiry_time
-    global lcd_message
-    global lcd_should_change
-    if data["for"] == "rgb":
-        print("RGBBBBBBBBBBBBBBBBBBBBBBBBRGBBBBBBBBBBBBBBBBB")
-        set_rgb_colors(data["rgb_colors"])
-        brgb_settings = settings['BRGB']
-        run_rgb(brgb_settings, threads, stop_event)
-        wait_for_threads()
+    if topic == "rgb":
+        if data["rgb"]:
+            set_rgb_colors(data["rgb"])
+            print("rgb vrednosti sa weba",get_rgb_colors())
+            set_is_color_changed(True)
+
 
 
 def run_sensors(settings, threads, stop_event):

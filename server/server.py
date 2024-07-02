@@ -219,6 +219,14 @@ def send_number_of_people():
     json_payload = json.dumps(payload)
     mqtt_client.publish("n_people", json_payload)
 
+def send_rgb_values(rgb):
+    print("šaljem",rgb)
+    payload = {
+        "rgb": rgb
+    }
+    json_payload = json.dumps(payload)
+    mqtt_client.publish("rgb", json_payload)
+
 def transform_setup_data(data):
     pi_name = data.get("pi_name", "")
     transformed_data = []
@@ -295,6 +303,16 @@ def handle_connect():
 @socketio.on('disconnect', namespace='/angular')
 def handle_disconnect():
     print('Client disconnected from Angular')
+
+
+@socketio.on('set_rgb', namespace='/angular')
+def handle_set_rgb(data):
+    try:
+        rgb_values = data['rgb']
+        print("Received RGB values:", rgb_values)
+        send_rgb_values(rgb_values)
+    except Exception as e:
+        print(f"Error handling set_rgb event: {str(e)}")
 
 if __name__ == '__main__':
     app.run(debug=True)

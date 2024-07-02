@@ -1,6 +1,5 @@
-// manage.component.ts
-
 import { Component } from '@angular/core';
+import { CommsService } from '../comms.service';
 
 @Component({
   selector: 'app-manage',
@@ -8,7 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./manage.component.css']
 })
 export class ManageComponent {
-  selectedColor: string = 'white';
+
+  constructor(private commsService: CommsService) {}
+
+  selectedColor: string = ''; // Initialize with empty string for "Select a color"
 
   colorMappings: { [key: string]: boolean[] } = {
     'white': [true, true, true],
@@ -22,8 +24,13 @@ export class ManageComponent {
   };
 
   applyColor(): void {
-    const rgbValues: boolean[] = this.colorMappings[this.selectedColor];
-    
-    console.log(`Applying RGB values: ${rgbValues}`);
+    if (this.selectedColor) { // Ensure a color is selected
+      const rgbValues: boolean[] = this.colorMappings[this.selectedColor];
+      console.log(`Applying RGB values: ${rgbValues}`);
+      this.commsService.sendRGBValues(rgbValues);
+    } else {
+      alert('Please select a color before applying.');
+      // Optionally, notify the user to select a color
+    }
   }
 }
