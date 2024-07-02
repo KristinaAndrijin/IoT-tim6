@@ -65,6 +65,9 @@ def run_sensors(settings, threads, stop_event):
     bir_settings = settings['BIR']
     run_ir(bir_settings, threads, stop_event)
 
+    rgb_settings = settings['BRGB']
+    run_rgb(rgb_settings, threads, stop_event)
+
 def open_menu():
     global is_menu_opened
     with actuator_lock:

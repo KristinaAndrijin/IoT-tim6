@@ -47,6 +47,22 @@ def ir_callback(reading,ir_settings):
         "value": reading
     }
 
+    if reading == "1":
+        current = get_rgb_colors()[0]
+        opposite = not current
+        set_rgb_colors_index(opposite,0)
+        set_is_color_changed(True)
+    elif reading == "2":
+        current = get_rgb_colors()[1]
+        opposite = not current
+        set_rgb_colors_index(opposite, 1)
+        set_is_color_changed(True)
+    elif reading == "3":
+        current = get_rgb_colors()[2]
+        opposite = not current
+        set_rgb_colors_index(opposite, 2)
+        set_is_color_changed(True)
+
     #printuj merenja ako meni nije otvoren
     with lock:
         if not get_is_menu_opened():

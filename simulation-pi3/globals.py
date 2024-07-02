@@ -6,7 +6,15 @@ lcd_message = ""
 lcd_should_change = False
 rgbColors = [True,False,False]
 threads_done_event = threading.Event()
+color_changed = False
 
+def get_is_color_changed():
+    return color_changed
+
+
+def set_is_color_changed(value):
+    global color_changed
+    color_changed = value
 
 def get_is_menu_opened():
     return is_menu_opened
@@ -24,6 +32,9 @@ def set_rgb_colors(value):
     global rgbColors
     rgbColors = value
 
+def set_rgb_colors_index(value,index):
+    global rgbColors
+    rgbColors[index] = value
 
 def led_is_on():
     return LedIsOn
