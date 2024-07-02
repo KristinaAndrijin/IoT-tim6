@@ -44,6 +44,12 @@ def sd_callback(sd_settings, value):
     # }
 
     with lock:
+        if get_display_iter() < 5:
+            set_display_iter(get_display_iter()+1)
+            return
+
+        set_display_iter(0)
+
         if not get_is_menu_opened():
             t = time.localtime()
             print("=" * 20)
@@ -65,14 +71,14 @@ def sd_callback(sd_settings, value):
 def run_sd(settings, threads, stop_event):
     code = settings['code']
     if settings['simulated']:
-        sd_thread = threading.Thread(target=run_sd_simulator, args=(2, sd_callback, stop_event, settings))
+        sd_thread = threading.Thread(target=run_sd_simulator, args=(0.5, sd_callback, stop_event, settings))
         sd_thread.start()
         threads.append(sd_thread)
     else:
         from sensors.sd import run_4sd_loop, SegmentDisplay
         print("Starting " + code + "loop")
         sd = SegmentDisplay(settings['segments'],settings['digits'])
-        sd_thread = threading.Thread(target=run_4sd_loop, args=(sd, 2, sd_callback, stop_event, settings))
+        sd_thread = threading.Thread(target=run_4sd_loop, args=(sd, 0.5, sd_callback, stop_event, settings))
         sd_thread.start()
         threads.append(sd_thread)
         print(code + " loop started")

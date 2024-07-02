@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+from globals import *
 
 class SegmentDisplay(object):
 
@@ -33,9 +34,19 @@ class SegmentDisplay(object):
 
 def run_4sd_loop(sd_device, delay, callback, stop_event,settings):
     try:
-        while True:
+        if check_timer():
+            if get_is_sd_working():
+                n = time.ctime()[11:13] + time.ctime()[14:16]
+            else:
+                n = " "*4
+            set_is_sd_working(not get_is_sd_working())
+
+        else:
             n = time.ctime()[11:13] + time.ctime()[14:16]
-            s = str(n).rjust(4)
+
+        s = str(n).rjust(4)
+
+        while True:
             for digit in range(4):
                 for loop in range(0, 7):
                     GPIO.output(sd_device.segments[loop], sd_device.num[s[digit]][loop])

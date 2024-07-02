@@ -17,6 +17,24 @@ is_alarm_on = False
 dms_alarm_on = False
 rpir_alarm_on = False
 gyro_alarm_on = False
+is_sd_working = False
+display_iter = 0
+
+def get_display_iter():
+    return display_iter
+
+
+def set_display_iter(value):
+    global display_iter
+    display_iter = value
+
+def get_is_sd_working():
+    return is_sd_working
+
+
+def set_is_sd_working(value):
+    global is_sd_working
+    is_sd_working = value
 
 def get_timer_time():
     return timer_time
