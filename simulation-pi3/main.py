@@ -1,5 +1,6 @@
 import json
 import threading
+from datetime import datetime
 
 from broker_settings import HOSTNAME, PORT
 from components.ir import run_ir
@@ -32,6 +33,8 @@ mqtt_client.loop_start()
 def on_connect(client, userdata, flags, rc):
     client.subscribe("PI3")
     client.subscribe("rgb")
+    client.subscribe("set_timer")
+    client.subscribe("timer_off")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: process_server_message(msg.topic, json.loads(msg.payload.decode('utf-8')))
@@ -42,6 +45,20 @@ def process_server_message(topic,data):
             set_rgb_colors(data["rgb"])
             print("rgb vrednosti sa weba",get_rgb_colors())
             set_is_color_changed(True)
+
+    if topic == "set_timer":
+        if data["time"]:
+            str_datetime = data["time"]
+            parsed_datetime = datetime.fromisoformat(str_datetime.replace('Z', '+00:00'))
+            set_is_timer_on(True)
+            set_timer_time(parsed_datetime)
+            print("timer je postavljen: ",get_timer_time())
+
+    if topic == "timer_off":
+        if data["state"]:
+            set_is_timer_on(False)
+            set_timer_time(None)
+            print("timer je isključen")
 
 
 

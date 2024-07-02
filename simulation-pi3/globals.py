@@ -7,6 +7,24 @@ lcd_should_change = False
 rgbColors = [True,False,False]
 threads_done_event = threading.Event()
 color_changed = False
+is_timer_on = False
+timer_time = None
+
+def get_timer_time():
+    return timer_time
+
+
+def set_timer_time(value):
+    global timer_time
+    timer_time = value
+
+def get_is_timer_on():
+    return is_timer_on
+
+
+def set_is_timer_on(value):
+    global is_timer_on
+    is_timer_on = value
 
 def get_is_color_changed():
     return color_changed

@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 from flask import Flask, jsonify, request, render_template, g, current_app
 from influxdb_client import InfluxDBClient, Point
@@ -233,7 +234,15 @@ def send_timer_value(time):
         "time": time
     }
     json_payload = json.dumps(payload)
-    mqtt_client.publish("set_time", json_payload)
+    mqtt_client.publish("set_timer", json_payload)
+
+def send_timer_turnoff():
+    print("šaljem turnoff za timer")
+    payload = {
+        "state": False
+    }
+    json_payload = json.dumps(payload)
+    mqtt_client.publish("timer_off", json_payload)
 
 def transform_setup_data(data):
     pi_name = data.get("pi_name", "")
@@ -325,16 +334,18 @@ def handle_set_rgb(data):
 @socketio.on('set_timer', namespace='/angular')
 def handle_set_timer(data):
     try:
-        data_time = data['time']
-        print("Received timer datetime:", data_time)
-        send_timer_value(data_time)
-        print("xdxdxdxd     tip",type(data_time))
+        date_time = data['time']
+        print("Received timer datetime:", date_time)
+        #parsed_datetime = datetime.fromisoformat(date_time.replace('Z', '+00:00'))
+        send_timer_value(date_time)
+        #print("xdxdxdxd     tip",type(parsed_datetime))
     except Exception as e:
         print(f"Error handling set_rgb event: {str(e)}")
 
 @socketio.on('turn_off_timer', namespace='/angular')
 def handle_turn_off_timer():
     try:
+        send_timer_turnoff()
         print("Received timer turn off message:")
     except Exception as e:
         print(f"Error handling set_rgb event: {str(e)}")
