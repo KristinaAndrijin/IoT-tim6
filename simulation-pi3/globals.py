@@ -12,6 +12,7 @@ ds_trigger = 1
 is_alarm_on = False
 dms_alarm_on = False
 rpir_alarm_on = False
+gyro_alarm_on = False
 
 
 def get_is_menu_opened():
@@ -104,3 +105,12 @@ def is_rpir_alarm_on():
 def set_rpir_alarm_on(value):
     global rpir_alarm_on
     rpir_alarm_on = value
+
+
+def is_gyro_alarm_on():
+    return gyro_alarm_on
+
+
+def set_gyro_alarm_on(value):
+    global gyro_alarm_on
+    gyro_alarm_on = value

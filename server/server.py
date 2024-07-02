@@ -1,3 +1,4 @@
+import math
 import threading
 import time
 
@@ -116,6 +117,9 @@ def check_for_triggers(data):
 
         if code == "RPIR1 - Bedroom Doors" or code == "RPIR2 - Open railing" or "RPIR3 - Kitchen" or "RPIR4 - Dinette":
             handle_rpir(data['value'])
+
+        if code == "GSG - Gun Safe Gyro":
+            handle_gsg(data)
 
     except Exception as e:
         print(f"Error in check_for_triggers: {str(e)}")
@@ -297,7 +301,7 @@ def handle_ds(ds_type):
 
 
 def handle_ds_dms(data):
-    print("DMS DS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    print("DMS DS")
     if is_dms_alarm_raised():
         return
     if data['value'] and (not is_code_correct()) and is_security_system_active(): # ako ima signala na DS
@@ -326,7 +330,7 @@ def handle_dms_code(code):
 
 def handle_rpir(signal):
     if signal and num_of_people == 0:
-        print("RPIRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+        print("RPIR")
         payload = {
             "alarm": True
         }
@@ -334,6 +338,36 @@ def handle_rpir(signal):
         mqtt_client.publish("raise_alarm_rpir_pi1", json_payload)
         mqtt_client.publish("raise_alarm_rpir_pi3", json_payload)
         set_rpir_alarm_raised(True)
+
+
+def calculate_magnitude(x, y, z):
+    return math.sqrt(x ** 2 + y ** 2 + z ** 2)
+
+def handle_gsg(data):
+    print("GYROOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+    value = data['value'].split(',')
+    if data['measurement'] == 'Acceleration':
+        accel_magnitude = calculate_magnitude(float(value[0]), float(value[1]), float(value[2]))
+        if accel_magnitude > get_acc_threshold():
+            print("ALARM ACC " + str(accel_magnitude))
+            set_gyro_alarm_raised(True)
+            payload = {
+                "acc": accel_magnitude
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("raise_alarm_gyro_pi1", json_payload)
+            mqtt_client.publish("raise_alarm_gyro_pi3", json_payload)
+    if data['measurement'] == 'Gyro':
+        gyro_magnitude = calculate_magnitude(float(value[0]), float(value[1]), float(value[2]))
+        if gyro_magnitude > get_gyro_threshold():
+            print("ALARM ROT " + str(gyro_magnitude))
+            set_gyro_alarm_raised(True)
+            payload = {
+                "gyro": gyro_magnitude
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("raise_alarm_gyro_pi1", json_payload)
+            mqtt_client.publish("raise_alarm_gyro_pi3", json_payload)
 
 def send_number_of_people():
     print("šaljem",num_of_people)

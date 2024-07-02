@@ -3,6 +3,9 @@ security_system_active = False
 code_correct = False
 dms_alarm_raised = False
 rpir_alarm_raised = False
+gyro_threshold = 60
+acc_threshold = 10
+gyro_alarm_raised = False
 
 
 def get_pin():
@@ -52,3 +55,30 @@ def is_rpir_alarm_raised():
 def set_rpir_alarm_raised(value):
     global rpir_alarm_raised
     rpir_alarm_raised = value
+
+
+def get_gyro_threshold():
+    return gyro_threshold
+
+
+def set_gyro_threshold(value):
+    global gyro_threshold
+    gyro_threshold = value
+
+
+def get_acc_threshold():
+    return acc_threshold
+
+
+def set_acc_threshold(value):
+    global acc_threshold
+    acc_threshold = value
+
+
+def is_gyro_alarm_raised():
+    return gyro_alarm_raised
+
+
+def set_gyro_alarm_raised(value):
+    global gyro_alarm_raised
+    gyro_alarm_raised = value
