@@ -1,4 +1,5 @@
 import threading
+from datetime import datetime
 
 is_menu_opened = False
 LedIsOn = False
@@ -143,3 +144,16 @@ def is_gyro_alarm_on():
 def set_gyro_alarm_on(value):
     global gyro_alarm_on
     gyro_alarm_on = value
+
+def check_timer():
+    if not is_timer_on:
+        return False
+    if timer_time is None:
+        return False
+    else:
+        current_datetime = datetime.now()
+        #print(timer_time, current_datetime, timer_time < current_datetime)
+        if timer_time < current_datetime:
+            return True
+        else:
+            return False

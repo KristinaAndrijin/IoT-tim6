@@ -37,32 +37,27 @@ export class TimersComponent {
 
   setTimer(): void {
     const currentTime = new Date();
-    console.log("balagassssss")
-    if (this.isTimerOn==false) {
-      console.log("balagas")
+
+    if (!this.isTimerOn) {
       if (this.selectedTimeString) {
         const [hours, minutes] = this.selectedTimeString.split(':');
-        const selectedDateTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), parseInt(hours), parseInt(minutes));
+        let selectedDateTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), parseInt(hours), parseInt(minutes));
 
-        console.log(selectedDateTime);
-        console.log(currentTime);
+        console.log('Selected Time:', selectedDateTime);
+        console.log('Current Time:', currentTime);
 
         const oneMinuteAhead = new Date(currentTime);
         oneMinuteAhead.setMinutes(oneMinuteAhead.getMinutes() + 1);
 
         if (selectedDateTime > oneMinuteAhead) {
           console.log('Setting timer for:', selectedDateTime);
-          alert("Timer is set")
-          this.setTimerState(true)
+          alert('Timer is set');
+          this.setTimerState(true);
           this.commsService.sendTimer(selectedDateTime);
         } else {
           alert('Invalid timer value. Please select a time at least one minute in the future.');
         }
-
-        return
-      } 
-      else 
-      {
+      } else {
         alert('Please select a valid time');
       }
     }

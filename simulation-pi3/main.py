@@ -1,6 +1,6 @@
 import json
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from broker_settings import HOSTNAME, PORT
 from components.ir import run_ir
@@ -55,16 +55,15 @@ def process_server_message(topic,data):
     if topic == "set_timer":
         if data["time"]:
             str_datetime = data["time"]
-            parsed_datetime = datetime.fromisoformat(str_datetime.replace('Z', '+00:00'))
+            parsed_datetime = datetime.strptime(str_datetime, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(hours=2)
             set_is_timer_on(True)
             set_timer_time(parsed_datetime)
             print("timer je postavljen: ",get_timer_time())
 
     if topic == "timer_off":
-        if data["state"]:
-            set_is_timer_on(False)
-            set_timer_time(None)
-            print("timer je isključen")
+        set_is_timer_on(False)
+        set_timer_time(None)
+        print("timer je iskljucen")
 
     if topic == "raise_alarm_ds_pi3":
         which_ds = data["ds"]
@@ -151,7 +150,7 @@ def open_menu():
             print("Invalid input. Try again.")
 
 def send_setup_to_server():
-    pi_name = "PI1"
+    pi_name = "PI3"
     settings = load_settings()
 
     payload = {
