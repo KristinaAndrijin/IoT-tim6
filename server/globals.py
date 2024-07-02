@@ -2,6 +2,7 @@ dms_pin = "ABCD"
 security_system_active = False
 code_correct = False
 dms_alarm_raised = False
+rpir_alarm_raised = False
 
 
 def get_pin():
@@ -42,3 +43,12 @@ def is_dms_alarm_raised():
 def set_dms_is_alarm_raised(value):
     global dms_alarm_raised
     dms_alarm_raised = value
+
+
+def is_rpir_alarm_raised():
+    return rpir_alarm_raised
+
+
+def set_rpir_alarm_raised(value):
+    global rpir_alarm_raised
+    rpir_alarm_raised = value

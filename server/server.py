@@ -114,6 +114,9 @@ def check_for_triggers(data):
             if is_dms_alarm_raised():
                 handle_dms_code(data['value'])
 
+        if code == "RPIR1 - Bedroom Doors" or code == "RPIR2 - Open railing" or "RPIR3 - Kitchen" or "RPIR4 - Dinette":
+            handle_rpir(data['value'])
+
     except Exception as e:
         print(f"Error in check_for_triggers: {str(e)}")
 
@@ -312,12 +315,25 @@ def handle_dms_code(code):
     print(code)
     check_code(code)
     if is_code_correct():
+        set_dms_is_alarm_raised(False)
         payload = {
             "code": code
         }
         json_payload = json.dumps(payload)
         mqtt_client.publish("turn_off_alarm_dms_ds_pi1", json_payload)
         mqtt_client.publish("turn_off_alarm_dms_ds_pi3", json_payload)
+
+
+def handle_rpir(signal):
+    if signal and num_of_people == 0:
+        print("RPIRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+        payload = {
+            "alarm": True
+        }
+        json_payload = json.dumps(payload)
+        mqtt_client.publish("raise_alarm_rpir_pi1", json_payload)
+        mqtt_client.publish("raise_alarm_rpir_pi3", json_payload)
+        set_rpir_alarm_raised(True)
 
 def send_number_of_people():
     print("šaljem",num_of_people)

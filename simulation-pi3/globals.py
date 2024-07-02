@@ -11,6 +11,7 @@ is_bb_on = False
 ds_trigger = 1
 is_alarm_on = False
 dms_alarm_on = False
+rpir_alarm_on = False
 
 
 def get_is_menu_opened():
@@ -94,3 +95,12 @@ def is_dms_alarm_on():
 def set_dms_alarm_on(value):
     global dms_alarm_on
     dms_alarm_on = value
+
+
+def is_rpir_alarm_on():
+    return rpir_alarm_on
+
+
+def set_rpir_alarm_on(value):
+    global rpir_alarm_on
+    rpir_alarm_on = value

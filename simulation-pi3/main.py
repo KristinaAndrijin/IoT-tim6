@@ -35,6 +35,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("turn_alarm_off_ds_pi3")
     client.subscribe("raise_alarm_dms_ds_pi3")
     client.subscribe("turn_off_alarm_dms_ds_pi3")
+    client.subscribe("raise_alarm_rpir_pi3")
 
 
 mqtt_client.on_connect = on_connect
@@ -61,6 +62,9 @@ def process_server_message(topic,data):
     if topic == "turn_off_alarm_dms_ds_pi3":
         print("DMS ALARM IS TURNED OFF")
         set_dms_alarm_on(False)
+    if topic == "raise_alarm_rpir_pi3":
+        print("RPIR ALARM")
+        set_rpir_alarm_on(True)
 
 
     # # vlado nes ovde ne radi
