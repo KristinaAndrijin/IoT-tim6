@@ -36,7 +36,9 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("raise_alarm_dms_ds_pi3")
     client.subscribe("turn_off_alarm_dms_ds_pi3")
     client.subscribe("raise_alarm_rpir_pi3")
+    client.subscribe("turn_alarm_off_rpir_pi3")
     client.subscribe("raise_alarm_gyro_p3")
+    client.subscribe("turn_alarm_off_gsg_pi3")
 
 
 mqtt_client.on_connect = on_connect
@@ -66,9 +68,15 @@ def process_server_message(topic,data):
     if topic == "raise_alarm_rpir_pi3":
         print("RPIR ALARM")
         set_rpir_alarm_on(True)
+    if topic == "turn_alarm_off_rpir_pi3":
+        print("RPIR ALARM TURNED OFF")
+        set_rpir_alarm_on(False)
     if topic == "raise_alarm_gyro_p3":
         print("RPIR ALARM")
         set_gyro_alarm_on(True)
+    if topic == "turn_alarm_off_gsg_pi3":
+        print("GYYRO ALARM TURNED OFF")
+        set_gyro_alarm_on(False)
 
 
     # # vlado nes ovde ne radi

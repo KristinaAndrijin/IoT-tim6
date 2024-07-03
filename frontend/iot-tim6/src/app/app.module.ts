@@ -11,6 +11,7 @@ import { ManageComponent } from './manage/manage.component';
 import { FormsModule } from '@angular/forms';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { HttpClientModule } from '@angular/common/http';
 
 const config: SocketIoConfig = { url: 'http://localhost:5000/angular', options: {} };
 
@@ -27,7 +28,8 @@ const config: SocketIoConfig = { url: 'http://localhost:5000/angular', options: 
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    SocketIoModule.forRoot(config)
+    SocketIoModule.forRoot(config),
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
