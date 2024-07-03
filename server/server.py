@@ -16,8 +16,8 @@ app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # InfluxDB Configuration
-token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ==" # Vlada
-#token = "SQuqGj-Pi9okHh4f8trKHhVU2hXORmzyw207p1vBC9p16zrUS_WVOfYGhkz_8cRD7D9qmERBtln_TRS6rYzJGA=="  # Kris
+# token = "ro0VzFsPfBwi966JZz2GaDO7_eYZ3qbS0ST-5FcL1Cy1Otsm7u6EUTULZ63vAZ21uZOztAhpWX9SymeXsRkpxQ==" # Vlada
+token = "SQuqGj-Pi9okHh4f8trKHhVU2hXORmzyw207p1vBC9p16zrUS_WVOfYGhkz_8cRD7D9qmERBtln_TRS6rYzJGA=="  # Kris
 org = "FTN"
 url = "http://localhost:8086"
 bucket = "example_db"
@@ -466,6 +466,7 @@ def send_values_to_angular(data):
 def send_alarms_to_angular(data):
     try:
         socketio.emit("alarms", data, namespace='/angular')
+        socketio.emit("alarm_exist", True, namespace='/angular')
         print("Data sent to Angular via Websockets")
     except Exception as e:
         print(f"Error sending data to Angular: {str(e)}")
@@ -577,6 +578,8 @@ def turn_off_alarm(data):
             mqtt_client.publish("turn_alarm_off_ds_pi1", json_payload)
             mqtt_client.publish("turn_alarm_off_ds_pi3", json_payload)
             set_ds_alarm_raised(False)
+            alarm_exists = not is_gyro_alarm_raised() and not is_rpir_alarm_raised() and not is_dms_alarm_raised() and not is_ds_alarm_raised()
+            socketio.emit("alarm_exist", alarm_exists, namespace='/angular')
         elif alarm_type == 'rpir':
             payload = {
                 "rpir": ''
@@ -585,6 +588,8 @@ def turn_off_alarm(data):
             mqtt_client.publish("turn_alarm_off_rpir_pi1", json_payload)
             mqtt_client.publish("turn_alarm_off_rpir_pi3", json_payload)
             set_rpir_alarm_raised(False)
+            alarm_exists = not is_gyro_alarm_raised() and not is_rpir_alarm_raised() and not is_dms_alarm_raised() and not is_ds_alarm_raised()
+            socketio.emit("alarm_exist", alarm_exists, namespace='/angular')
         elif alarm_type == 'gsg':
             payload = {
                 "gsg": ''
@@ -593,13 +598,17 @@ def turn_off_alarm(data):
             mqtt_client.publish("turn_alarm_off_gsg_pi1", json_payload)
             mqtt_client.publish("turn_alarm_off_gsg_pi3", json_payload)
             set_gyro_alarm_raised(False)
+            alarm_exists = not is_gyro_alarm_raised() and not is_rpir_alarm_raised() and not is_dms_alarm_raised() and not is_ds_alarm_raised()
+            socketio.emit("alarm_exist", alarm_exists, namespace='/angular')
         elif alarm_type == 'dms':
             check_code(data['pin'])
             data = {
                 "code": is_code_correct()
             }
             socketio.emit("dms_pin", data, namespace='/angular')
-                
+            set_dms_is_alarm_raised(is_code_correct())
+            alarm_exists = not is_gyro_alarm_raised() and not is_rpir_alarm_raised() and not is_dms_alarm_raised() and not is_ds_alarm_raised()
+            socketio.emit("alarm_exist", alarm_exists, namespace='/angular')
 
         return jsonify({"status": "success"})
     except Exception as e:
