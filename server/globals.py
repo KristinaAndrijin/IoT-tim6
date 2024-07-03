@@ -6,6 +6,7 @@ rpir_alarm_raised = False
 gyro_threshold = 60
 acc_threshold = 10
 gyro_alarm_raised = False
+ds_alarm_raised = False
 
 
 def get_pin():
@@ -82,3 +83,12 @@ def is_gyro_alarm_raised():
 def set_gyro_alarm_raised(value):
     global gyro_alarm_raised
     gyro_alarm_raised = value
+
+
+def is_ds_alarm_raised():
+    return ds_alarm_raised
+
+
+def set_ds_alarm_raised(value):
+    global ds_alarm_raised
+    ds_alarm_raised = value

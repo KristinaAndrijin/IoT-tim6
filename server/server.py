@@ -287,6 +287,7 @@ def handle_ds(ds_type):
             else:
                 last_ds2 = False
             save_alarm_to_db("DS", False)
+            set_ds_alarm_raised(False)
 
         should_raise_alarm = all(points)
         if should_raise_alarm:
@@ -304,12 +305,17 @@ def handle_ds(ds_type):
                 last_ds2 = True
 
             save_alarm_to_db("DS", True)
+            data = {
+                "type": "ds" + str(ds_type)
+            }
+            send_alarms_to_angular(data)
+            set_ds_alarm_raised(True)
 
 
 def handle_ds_dms(data):
     print("DMS DS")
-    if is_dms_alarm_raised():
-        return
+    # if is_dms_alarm_raised():
+    #     return
     if data['value'] and (not is_code_correct()) and is_security_system_active(): # ako ima signala na DS
         set_dms_is_alarm_raised(True)
         print("DMS ALARM")
@@ -320,6 +326,10 @@ def handle_ds_dms(data):
         mqtt_client.publish("raise_alarm_dms_ds_pi1", json_payload)
         mqtt_client.publish("raise_alarm_dms_ds_pi3", json_payload)
         save_alarm_to_db("DS-DMS", True)
+        data = {
+            "type": "dms"
+        }
+        send_alarms_to_angular(data)
 
 
 def handle_dms_code(code):
@@ -348,6 +358,11 @@ def handle_rpir(signal):
         set_rpir_alarm_raised(True)
         save_alarm_to_db("RPIR", True)
 
+        data = {
+            "type": "rpir"
+        }
+        send_alarms_to_angular(data)
+
 
 def calculate_magnitude(x, y, z):
     return math.sqrt(x ** 2 + y ** 2 + z ** 2)
@@ -367,6 +382,10 @@ def handle_gsg(data):
             mqtt_client.publish("raise_alarm_gyro_pi1", json_payload)
             mqtt_client.publish("raise_alarm_gyro_pi3", json_payload)
             save_alarm_to_db("GSG", True)
+            data = {
+                "type": "gsg"
+            }
+            send_alarms_to_angular(data)
     if data['measurement'] == 'Gyro':
         gyro_magnitude = calculate_magnitude(float(value[0]), float(value[1]), float(value[2]))
         if gyro_magnitude > get_gyro_threshold():
@@ -379,6 +398,10 @@ def handle_gsg(data):
             mqtt_client.publish("raise_alarm_gyro_pi1", json_payload)
             mqtt_client.publish("raise_alarm_gyro_pi3", json_payload)
             save_alarm_to_db("GSG", True)
+            data = {
+                "type": "gsg"
+            }
+            send_alarms_to_angular(data)
 
 def send_number_of_people():
     print("šaljem",num_of_people)
@@ -436,6 +459,14 @@ def send_values_to_angular(data):
     try:
         socketio.emit("values", data, namespace='/angular')
         # print("Data sent to Angular via Websockets")
+    except Exception as e:
+        print(f"Error sending data to Angular: {str(e)}")
+
+
+def send_alarms_to_angular(data):
+    try:
+        socketio.emit("alarms", data, namespace='/angular')
+        print("Data sent to Angular via Websockets")
     except Exception as e:
         print(f"Error sending data to Angular: {str(e)}")
 
@@ -530,6 +561,49 @@ def handle_turn_off_timer():
         print("Received timer turn off message:")
     except Exception as e:
         print(f"Error handling set_rgb event: {str(e)}")
+
+
+@socketio.on('turn_off_alarm', namespace='/angular')
+def turn_off_alarm(data):
+    print("TURN OFF DS ALARM WJFNWIJNFIWNFWFNIWFNFOIJWNFIJWNFWKJEFNKWJFNWKEJNFWKENJKWNJ")
+    try:
+        alarm_type = data['type']
+        print(alarm_type)
+        if alarm_type == 'ds':
+            payload = {
+                "ds": ''
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("turn_alarm_off_ds_pi1", json_payload)
+            mqtt_client.publish("turn_alarm_off_ds_pi3", json_payload)
+            set_ds_alarm_raised(False)
+        elif alarm_type == 'rpir':
+            payload = {
+                "rpir": ''
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("turn_alarm_off_rpir_pi1", json_payload)
+            mqtt_client.publish("turn_alarm_off_rpir_pi3", json_payload)
+            set_rpir_alarm_raised(False)
+        elif alarm_type == 'gsg':
+            payload = {
+                "gsg": ''
+            }
+            json_payload = json.dumps(payload)
+            mqtt_client.publish("turn_alarm_off_gsg_pi1", json_payload)
+            mqtt_client.publish("turn_alarm_off_gsg_pi3", json_payload)
+            set_gyro_alarm_raised(False)
+        elif alarm_type == 'dms':
+            check_code(data['pin'])
+            data = {
+                "code": is_code_correct()
+            }
+            socketio.emit("dms_pin", data, namespace='/angular')
+                
+
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True)
