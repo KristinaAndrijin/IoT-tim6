@@ -1,0 +1,51 @@
+.container {
+    display: flex;
+    height: 85vh;
+    padding: 20px;
+}
+
+.grafana {
+    flex: 2; 
+    background-color: #f0f0f0; 
+    padding: 20px; 
+}
+
+.devices {
+    flex: 1; 
+    padding: 20px; 
+}
+
+.machine-select {
+    margin-bottom: 20px;
+    margin-left: 25px;
+}
+
+.machine-select select {
+    width: 20%; 
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+    
+}
+
+.devices-list {
+    justify-self: flex-start;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 85%; 
+    overflow-y: auto;
+}
+
+.device-card {
+    border-radius: 8px;
+    width: 90%; 
+    margin: 10px; 
+    background-color: #e0e0e0;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+h2{
+    font-size: 20px;
+}

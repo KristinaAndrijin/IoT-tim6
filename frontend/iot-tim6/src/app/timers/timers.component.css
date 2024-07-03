@@ -1,0 +1,38 @@
+
+.container {
+    padding: 30px;
+}
+
+.timer-section {
+    flex: 1;
+    
+}
+
+.timer-section div {
+    display: flex;
+    flex-direction: column;
+}
+
+.timer-section label {
+    margin-bottom: 10px;
+}
+
+.timer-section input {
+    padding: 8px;
+    margin-bottom: 10px;
+    max-width: 25%;
+}
+
+.timer-section button {
+    padding: 10px;
+    background-color: #2196F3;
+    color: white;
+    cursor: pointer;
+    border-style: none;
+    width: fit-content;
+}
+
+.timer-section p {
+    font-weight: bold;
+    margin-bottom: 10px;
+}

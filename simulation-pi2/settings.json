@@ -1,0 +1,59 @@
+{
+    "GDHT": {
+        "simulated": true,
+        "pin": 17,
+        "code": "GDTH - Garage",
+        "runs_on": "PI2"
+    },
+
+    "RDHT3": {
+        "simulated": true,
+        "pin": 17,
+        "code": "RDHT3 - Kitchen",
+        "runs_on": "PI2"
+    },
+
+    "DS2": {
+        "simulated": true,
+        "pin": 17,
+        "code": "DS2 - Family Foyer",
+        "runs_on": "PI2"
+    },
+
+     "DUS2": {
+        "simulated": true,
+        "trig_pin": 23,
+        "echo_pin": 24,
+        "code": "DUS2 - Garage",
+        "runs_on": "PI2"
+    },
+
+    "DPIR2": {
+        "simulated": true,
+        "pin": 17,
+        "code": "DPIR2 - Garage",
+        "runs_on": "PI2"
+    },
+
+    "RPIR3": {
+        "simulated": true,
+        "pin": 17,
+        "code": "RPIR3 - Kitchen",
+        "runs_on": "PI2"
+    },
+
+    "GLCD": {
+        "simulated": true,
+        "pin_e": 2,
+        "pin_rs": 0,
+        "pins_db" : [4, 5, 6, 7],
+        "code": "GLCD - Garage LCD",
+        "runs_on": "PI2"
+    },
+
+    "GSG": {
+        "simulated": true,
+        "code": "GSG - Gun Safe Gyro",
+        "runs_on": "PI2"
+    }
+}

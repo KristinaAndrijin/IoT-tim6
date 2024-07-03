@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="grafana">
+    <iframe #grafanaIframe src="" width="100%" height="100%" frameborder="0"></iframe>
+  </div>
+
+  <div class="devices">
+    <div class="machine-select">
+      <p>Select a PI:</p>
+      <select [(ngModel)]="selectedPi" (change)="updateDevicesList(); loadGrafanaDashboard()">
+        <option value="PI1">PI1</option>
+        <option value="PI2">PI2</option>
+        <option value="PI3">PI3</option>
+      </select>
+    </div>
+
+    <div class="devices-list">
+      <div class="device-card" *ngFor="let device of devicesList">
+        <h2>{{ device.name }}</h2>
+        <div class="device-properties">
+          <ng-container *ngFor="let keyValuePair of device | keyvalue">
+            <p *ngIf="keyValuePair.key !== 'name'">
+              {{ keyValuePair.key }}: {{ trimValue(keyValuePair.value) }}
+            </p>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

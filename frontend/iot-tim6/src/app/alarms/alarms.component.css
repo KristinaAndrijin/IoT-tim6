@@ -1,0 +1,50 @@
+/* alarms.component.css */
+
+.container {
+    display: flex;
+    height: 85vh;
+    padding: 20px;
+}
+  
+  .grafana {
+    flex: 2;
+    background-color: #f0f0f0;
+    padding: 20px;
+  }
+  
+  .alarm-section {
+    flex: 1;
+    padding: 20px;
+    border-left: 1px solid #ccc;
+  }
+  
+  .alarm-raise {
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .deactivate-alarm {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .deactivate-alarm label {
+    margin-bottom: 10px;
+  }
+  
+  .deactivate-alarm input {
+    padding: 8px;
+    margin-bottom: 10px;
+    max-width: 30%;
+  }
+  
+  .deactivate-alarm button {
+    padding: 10px;
+    background-color: #2196F3;
+    color: white;
+    cursor: pointer;
+    max-width: fit-content;
+    border-style: none;
+  }
+
+  

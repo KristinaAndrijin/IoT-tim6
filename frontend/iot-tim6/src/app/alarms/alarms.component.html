@@ -1,0 +1,55 @@
+<!-- alarms.component.html -->
+
+<div class="container">
+    <div class="grafana">
+        <!-- <iframe class="Vlada" src="http://localhost:3000/goto/cyM283cSR?orgId=1" width="100%" height="100%" frameborder="0"></iframe> -->
+        <iframe class="Kris" src="http://localhost:3000/goto/0Hel_CwSR?orgId=1" width="100%" height="100%" frameborder="0"></iframe>
+      <p>Grafana Section</p>
+    </div>
+    
+    <div class="alarm-section">
+        <div *ngIf="isDmsAlarmActive">
+          <p class="alarm-raise">DMS alarm has been raised</p>
+          
+          <div class="deactivate-alarm">
+            <label for="pinInput">Enter PIN:</label>
+            <input type="password" id="pinInput" [(ngModel)]="pinInput" />
+            <button (click)="deactivateAlarm(pinInput)">Deactivate</button>
+          </div>
+        </div>
+
+        <hr *ngIf="isDmsAlarmActive">
+
+        <div *ngIf="isDsAlarmActive">
+          <p class="alarm-raise">DS alarm has been raised</p>
+          
+          <div class="deactivate-alarm">
+            <button (click)="deactivateDsAlarm()">Deactivate</button>
+          </div>
+        </div>
+
+        <hr *ngIf="isDsAlarmActive">
+
+        <div *ngIf="isRpirAlarmActive">
+          <p class="alarm-raise">Rpir alarm has been raised</p>
+          
+          <div class="deactivate-alarm">
+            <button (click)="deactivateRpirAlarm()">Deactivate</button>
+          </div>
+        </div>
+
+        <hr *ngIf="isRpirAlarmActive">
+
+        <div *ngIf="isGsgAlarmActive">
+          <p class="alarm-raise">GSG alarm has been raised</p>
+          
+          <div class="deactivate-alarm">
+            <button (click)="deactivateGsgAlarm()">Deactivate</button>
+          </div>
+        </div>
+
+    </div>  
+
+
+  </div>
+  
