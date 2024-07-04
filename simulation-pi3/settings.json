@@ -29,7 +29,7 @@
     },
 
     "BRGB": {
-        "simulated": true,
+        "simulated": false,
         "red_pin": 12,
         "green_pin": 13,
         "blue_pin": 19,
@@ -38,8 +38,8 @@
     },
 
     "BIR": {
-        "simulated": true,
-        "pin": 16,
+        "simulated": false,
+        "pin": 17,
         "code": "BIR - Bedroom InfraRed",
         "runs_on": "PI3"
     }

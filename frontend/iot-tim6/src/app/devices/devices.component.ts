@@ -45,16 +45,16 @@ export class DevicesComponent implements OnInit, OnDestroy {
       let grafanaLink = '';
       switch (this.selectedPi) {
         case 'PI1':
-          // grafanaLink = 'http://localhost:3000/goto/cyM283cSR?orgId=1'; // Vlada
-          grafanaLink = 'http://localhost:3000/goto/5M4y_jwSR?orgId=1' // Kris 
+           grafanaLink = 'http://localhost:3000/goto/cyM283cSR?orgId=1'; // Vlada
+          //grafanaLink = 'http://localhost:3000/goto/5M4y_jwSR?orgId=1' // Kris 
           break;
         case 'PI2':
-          // grafanaLink = 'http://localhost:3000/goto/RZqEajwIR?orgId=1'; // Vlada
-          grafanaLink = 'http://localhost:3000/goto/8-tU_CwSR?orgId=1' // Kris 
+           grafanaLink = 'http://localhost:3000/goto/RZqEajwIR?orgId=1'; // Vlada
+          //grafanaLink = 'http://localhost:3000/goto/8-tU_CwSR?orgId=1' // Kris 
           break;
         case 'PI3':
-          // grafanaLink = "http://localhost:3000/goto/QH5EfCQSR?orgId=1"; // Vlada
-          grafanaLink = 'http://localhost:3000/goto/UUK__CQIg?orgId=1' // Kris 
+           grafanaLink = "http://localhost:3000/goto/QH5EfCQSR?orgId=1"; // Vlada
+          //grafanaLink = 'http://localhost:3000/goto/UUK__CQIg?orgId=1' // Kris 
           break;
       }
   
